@@ -9,7 +9,8 @@ This project provides a custom [ACME DNS01 Challenge Provider](https://cert-mana
 
 This implementation is based on [infoblox-go-client](https://github.com/infobloxopen/infoblox-go-client) library.
 
-This project is a fork of https://github.com/cert-manager/webhook-example.
+This project is a fork of https://github.com/luisico/cert-manager-webhook-infoblox-wapi, which was forked from 
+https://github.com/cert-manager/webhook-example.
 
 - [Requirements](#requirements)
 - [Installation](#installation)

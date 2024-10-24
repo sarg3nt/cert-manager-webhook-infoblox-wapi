@@ -3,7 +3,7 @@ OS ?= $(shell $(GO) env GOOS)
 ARCH ?= $(shell $(GO) env GOARCH)
 
 IMAGE_NAME := ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi
-IMAGE_TAG := 1.6.0
+IMAGE_TAG := 1.6.1
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD | sed 's/[\/_]/-/g')
 
 OUT := $(shell pwd)/_out
@@ -36,8 +36,8 @@ build:
 build-container:
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)-$(GIT_BRANCH)" .
 
-.PHONY: push
-push: 
+.PHONY: push-container
+push-container: 
 	docker push "$(IMAGE_NAME):$(IMAGE_TAG)-$(GIT_BRANCH)"
 
 .PHONY: helm

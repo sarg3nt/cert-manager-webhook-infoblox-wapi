@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/cert-manager/cert-manager v1.16.1
-	github.com/infobloxopen/infoblox-go-client/v2 v2.0.0
+	github.com/infobloxopen/infoblox-go-client/v2 v2.7.0
 	k8s.io/apiextensions-apiserver v0.31.2
 	k8s.io/apimachinery v0.31.2
 	k8s.io/client-go v0.31.2

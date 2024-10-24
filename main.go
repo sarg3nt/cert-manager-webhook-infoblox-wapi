@@ -286,9 +286,13 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 
 	// Initialize ibclient
 	hostConfig := ibclient.HostConfig{
-		Host:     cfg.Host,
-		Version:  cfg.Version,
-		Port:     cfg.Port,
+		Host:    cfg.Host,
+		Version: cfg.Version,
+		Port:    cfg.Port,
+	}
+
+	// Initialize the auth config for ibclient
+	authConfig := ibclient.AuthConfig{
 		Username: username,
 		Password: password,
 	}
@@ -297,7 +301,7 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 	requestBuilder := &ibclient.WapiRequestBuilder{}
 	requestor := &ibclient.WapiHttpRequestor{}
 
-	ib, err := ibclient.NewConnector(hostConfig, transportConfig, requestBuilder, requestor)
+	ib, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 	if err != nil {
 		return nil, err
 	}
@@ -323,7 +327,7 @@ func (c *customDNSProviderSolver) getSecret(sel cmmeta.SecretKeySelector, namesp
 // Get the ref for TXT record in InfoBlox given its name, text and view
 func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name string, text string, view string) (string, error) {
 	var records []ibclient.RecordTXT
-	recordTXT := ibclient.NewRecordTXT(ibclient.RecordTXT{})
+	recordTXT := ibclient.NewRecordTXT(view, "", "", "", 0, false, "", nil)
 	params := map[string]string{
 		"name": name,
 		"text": text,
@@ -340,12 +344,7 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 
 // Create a TXT record in Infoblox
 func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string) (string, error) {
-	recordTXT := ibclient.NewRecordTXT(ibclient.RecordTXT{
-		Name: name,
-		Text: text,
-		View: view,
-	})
-
+	recordTXT := ibclient.NewRecordTXT(view, "", name, text, 70, true, "", nil)
 	return ib.CreateObject(recordTXT)
 }
 
