@@ -89,6 +89,7 @@ type customDNSProviderConfig struct {
 	HttpRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
 	HttpPoolConnections int                      `json:"httpPoolConnections" default:"10"`
 	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
+	//TODO: Add ability to pass port, zones and the ttl
 }
 
 type usernamePassword struct {
@@ -370,6 +371,7 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 // Create a TXT record in Infoblox
 func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string) (string, error) {
 	logf.V(logf.InfoLevel).InfoS("CMI: Creating TXT record")
+	// TODO: add support zones and ttl
 	recordTXT := ibclient.NewRecordTXT(view, "", name, text, 140, true, "", nil)
 	logf.V(logf.InfoLevel).InfoS("CMI: RecordTXT:", recordTXT)
 	return ib.CreateObject(recordTXT)

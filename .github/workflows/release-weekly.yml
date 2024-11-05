@@ -3,7 +3,7 @@ name: Weekly Release
 on:
   schedule:
     # If the schedule stops working, see the docs: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule
-    - cron: '0 0 * * 0' # Runs weekly at 00:00 on Sunday
+    - cron: '0 0 * * 0' # Runs weekly at 00:00 UTC on Sunday
   workflow_dispatch: # Allows manual triggering
 
 env:
@@ -96,6 +96,7 @@ jobs:
       changeset: ${{ steps.updater.outputs.changeset }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
       - uses: lrstanley/helm-version-updater@91c756dbbc1ac62747df7131c32b0fbc8788222f # v1.0.4
         id: updater
         with:
@@ -124,7 +125,7 @@ jobs:
         with:
           check-dir: ${{ matrix.change.path }}
 
-      - name: create pr
+      - name: Create PR
         uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -149,5 +150,4 @@ jobs:
           delete-branch: true
           base: main
           labels: "chore,chart,chart-${{ matrix.change.chart.name }}"
-          assignees: "sarg3nt"
 
