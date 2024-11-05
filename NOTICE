@@ -1,0 +1,36 @@
+Files modified or deleted by Luis Gracia (lgracia@rockefeller.edu) from the original source listed here
+
+ .gitignore
+ Makefile
+ OWNERS (gone)
+ README.md
+ deploy/cert-manager-webhook-infoblox-wapi/Chart.yaml (new)
+ deploy/cert-manager-webhook-infoblox-wapi/templates/rbac.yaml (new)
+ deploy/example-webhook/Chart.yaml (gone)
+ deploy/example-webhook/templates/rbac.yaml (gone)
+ deploy/templates/apiservice.yaml
+ deploy/templates/deployment.yaml
+ deploy/{example-webhook => cert-manager-webhook-infoblox-wapi}/.helmignore
+ deploy/{example-webhook => cert-manager-webhook-infoblox-wapi}/templates/NOTES.txt
+ deploy/{example-webhook => cert-manager-webhook-infoblox-wapi}/templates/_helpers.tpl
+ deploy/{example-webhook => cert-manager-webhook-infoblox-wapi}/templates/pki.yaml
+ deploy/{example-webhook => cert-manager-webhook-infoblox-wapi}/templates/service.yaml
+ deploy/{example-webhook => cert-manager-webhook-infoblox-wapi}/values.yaml
+ example/dns.go (gone)
+ example/example.go (gone)
+ example/example_test.go (gone)
+ go.mod
+ go.sum
+ main.go
+ main_test.go
+ testdata/my-custom-solver/README.md (gone)
+ testdata/my-custom-solver/config.json (gone)
+
+ Files modified by Dave Sargent (dave@sarg3.net)
+ Dockerfile
+ go.mod
+ go.sum
+ main.go
+ Makefile
+ NOTICE
+ README.md

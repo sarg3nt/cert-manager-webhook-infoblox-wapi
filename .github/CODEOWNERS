@@ -1,0 +1,11 @@
+# Specify owners for the entire repository
+* @sarg3nt @BrickCForce @Stanrofl @aidanleuck
+
+# Specify owners for specific directories
+# /docs/ @docs-owner
+
+# Specify owners for specific files
+# /scripts/deploy.sh @devops-owner
+
+# Specify owners for specific file types
+# *.md @documentation-owner
