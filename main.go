@@ -80,16 +80,18 @@ type customDNSProviderConfig struct {
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
 	Host                string                   `json:"host"`
-	Version             string                   `json:"version"             default:"2.5"`
 	Port                string                   `json:"port"                default:"443"`
+	Version             string                   `json:"version"             default:"2.10"`
 	UsernameSecretRef   cmmeta.SecretKeySelector `json:"usernameSecretRef"`
 	PasswordSecretRef   cmmeta.SecretKeySelector `json:"passwordSecretRef"`
 	View                string                   `json:"view"`
+	Zone                string                   `json:"zone"                default:""`
 	SslVerify           bool                     `json:"sslVerify"           default:"false"`
 	HttpRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
 	HttpPoolConnections int                      `json:"httpPoolConnections" default:"10"`
 	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
-	//TODO: Add ability to pass port, zones and the ttl
+	TTL                 uint32                   `json:"ttl"                 default:"90"`
+	UseTtl              bool                     `json:"useTtl"              default:"true"`
 }
 
 type usernamePassword struct {

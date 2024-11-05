@@ -30,12 +30,12 @@ clean:
 
 .PHONY: build
 build:
+	go mod tidy
 	CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
 
 .PHONY: build-container
-# TODO: Fix Makefile issues.
 build-container:
-  go mod tidy && \
+	go mod tidy
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)-$(GIT_BRANCH)" .
 
 .PHONY: push-container
