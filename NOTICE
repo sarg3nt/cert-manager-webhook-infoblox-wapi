@@ -26,11 +26,36 @@ Files modified or deleted by Luis Gracia (lgracia@rockefeller.edu) from the orig
  testdata/my-custom-solver/README.md (gone)
  testdata/my-custom-solver/config.json (gone)
 
- Files modified by Dave Sargent (dave@sarg3.net)
+Files modified by Dave Sargent (dave@sarg3.net)
+ .devcontainer/devcontainer.json
+ .devcontainer/initialize_command.sh
+ .devcontainer/post_start_command.sh
+ .github/workflows/release.yaml
+ .github/workflows/codeql.yml
+ .github/workflows/dependency-review.yml
+ .github/workflows/deploy-chart-on-pr-close.yaml
+ .github/workflows/release-weekly.yml
+ .github/workflows/release.yml
+ .github/workflows/scorecard.yml
+ .github/workflows/trivy.yml
+ charts/cert-manager-webhook-infoblox-wapi/templates/deployment.yaml
+ charts/cert-manager-webhook-infoblox-wapi/Chart.yaml
+ charts/cert-manager-webhook-infoblox-wapi/ci-config.yaml
+ charts/cert-manager-webhook-infoblox-wapi/values.yaml
+ lib/sh/colors.sh
+ workflow_scripts/compare_containers.sh
+ workflow_scripts/get_latest_version.sh
+ .gitignore
+ .mise.toml
+ .pre-commit-config.yaml
+ cspell.json
+ dev.sh
  Dockerfile
  go.mod
  go.sum
+ main_test.go
  main.go
  Makefile
  NOTICE
  README.md
+ SECURITY.md
