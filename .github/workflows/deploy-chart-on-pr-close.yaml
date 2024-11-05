@@ -1,0 +1,50 @@
+name: Deploy Chart on PR Close
+
+on:
+  pull_request:
+    types:
+      - closed
+    paths:
+      - 'charts/**'
+
+permissions:
+  contents: read
+
+jobs:
+  on_chart_pr_close:
+    name: Deploy Chart on PR Close
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+      with:
+        egress-policy: audit
+
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+    - name: Install Helm
+      uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814 # v4.2.0
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+    # This will release the chart to the gh-pages branch
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
+      with: 
+        mark_as_latest: false
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

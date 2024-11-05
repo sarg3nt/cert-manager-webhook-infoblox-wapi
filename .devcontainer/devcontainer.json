@@ -1,0 +1,261 @@
+// cSpell:ignore FUMPT ciiqr darkriszty euskadi Gruntfuggly huizhou githd kato mhutchie tamasfe koehler yzhang gopls gofumpt docomment 
+{
+  "name": "cert-manager-webhook-infoblox-wapi",
+  "runArgs": [
+    "--name=cert-manager-webhook-infoblox-wapi"
+  ],
+  "mounts": [
+    "source=cert-manager-webhook-infoblox-wapi-bashhistory,target=/commandhistory,type=volume",
+    "source=cert-manager-webhook-infoblox-wapi-plugins,target=/home/vscode/.vscode-server/extensions,type=volume",
+    ///// The following should be the same for all dev containers using this image. The post_start_command.sh relies on these.
+    // Your host should have a .docker directory set up and you should be logged into any Artifactory
+    // repositories you need access to in the dev container.  Logging into a repo inside the dev container will not stick.
+    "source=${localEnv:HOME}/.docker,target=/home/vscode/.docker-localhost,type=bind",
+    // If you will be working with Kubernetes you should have a configured kube config file in your .kube directory.
+    "source=${localEnv:HOME}/.kube,target=/home/vscode/.kube-localhost,type=bind",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh-localhost,type=bind",
+    "source=${localEnv:HOME}/.config/k9s,target=/home/vscode/.config/k9s-localhost,type=bind",
+    "source=${localEnv:HOME}/.local/share/k9s,target=/home/vscode/.local/share/k9s-localhost,type=bind",
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+  ],
+  "containerEnv": {
+    ////////// Repo Specific Environment Variables //////////
+    // "MY_VAR": "${localEnv:MY_VAR}",
+    //// End Repo Specific Env Vars ////
+    ////////// Dev Container specific environment variables, do not change. //////////
+    // If the user has a ZSH_THEME set up then we will use it and not load Starship
+    "ZSH_THEME": "${localEnv:ZSH_THEME}",
+    "TERM": "xterm-256color",
+    // Used to set the hosts project path for use in scripts running inside a docker container inside the dev container
+    "HOST_PROJECT_PATH": "${localWorkspaceFolder}",
+    "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+    "TZ": "America/Los_Angeles" // Set the timezone in the devcontainer
+  },
+  "image": "ghcr.io/sarg3nt/go-dev-container:latest",
+  "initializeCommand": [
+    ".devcontainer/initialize_command.sh"
+  ],
+  "postStartCommand": [
+    ".devcontainer/post_start_command.sh"
+  ],
+  "init": true,
+  "overrideCommand": false,
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "albert.TabOut", // Tab to exit closures
+        "ciiqr.encode", // encoder, such as base64, url etc.
+        "darkriszty.markdown-table-prettify", // markdown table prettify
+        "EditorConfig.EditorConfig", // Add support for editorConfig
+        "euskadi31.json-pretty-printer", // json pretty print
+        "foxundermoon.shell-format", // bash and sh files
+        "GitHub.copilot", // Copilot
+        "GitHub.copilot-chat", // Copilot inline chat.
+        "GitHub.vscode-github-actions", // Github actions
+        "github.vscode-pull-request-github", // Github pull requests
+        "golang.go", // Golang support
+        "Gruntfuggly.todo-tree", // TODO, FIXME, etc highlights and tree
+        "huizhou.githd", // Git blame and some other git stuff
+        "IronGeek.vscode-env", // For linux environment files
+        "k--kato.docomment", // Code documentation
+        "mhutchie.git-graph", // Git graph
+        "ms-azuretools.vscode-docker", // Docker
+        "ms-kubernetes-tools.vscode-kubernetes-tools", // Kubernetes
+        "ms-vscode.makefile-tools", // Makefile support
+        "redhat.vscode-yaml", // YAML
+        "streetsidesoftware.code-spell-checker", // Spell checker
+        "tamasfe.even-better-toml", // TOML
+        "tim-koehler.helm-intellisense", // Helm
+        "timonwong.shellcheck", //bash script linting
+        "yzhang.markdown-all-in-one" // markdown preview and support
+      ],
+      "settings": {
+        "dev.containers.dockerCredentialHelper": false,
+        "go.buildTags": "",
+        "go.toolsEnvVars": {
+          "CGO_ENABLED": "0"
+        },
+        "go.useLanguageServer": true,
+        "go.testEnvVars": {
+          "CGO_ENABLED": "1"
+        },
+        "go.testFlags": [
+          "-v",
+          "-race"
+        ],
+        "go.testTimeout": "30s",
+        "go.coverOnSingleTest": true,
+        "go.coverOnSingleTestFile": true,
+        "go.coverOnTestPackage": true,
+        "go.lintTool": "golangci-lint",
+        "go.lintOnSave": "package",
+        "[go]": {
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+          }
+        },
+        "gopls": {
+          "usePlaceholders": false,
+          "staticcheck": true,
+          "formatting.gofumpt": true
+        },
+        // cspell settings
+        // https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker
+        // check language ids here: https://code.visualstudio.com/docs/languages/identifiers
+        "cSpell": {
+          "enabledLanguageIds": [
+            "asciidoc",
+            "c",
+            "cpp",
+            "csharp",
+            "css",
+            "dockerfile",
+            "git-commit",
+            "go",
+            "graphql",
+            "handlebars",
+            "haskell",
+            "html",
+            "jade",
+            "java",
+            "javascript",
+            "javascriptreact",
+            "json",
+            "jsonc",
+            "latex",
+            "less",
+            "markdown",
+            "php",
+            "plaintext",
+            "python",
+            "pug",
+            "restructuredtext",
+            "rust",
+            "shellscript",
+            "scala",
+            "scss",
+            "text",
+            "typescript",
+            "typescriptreact",
+            "yaml"
+          ],
+          "enableFiletypes": [
+            "terraform"
+          ],
+          "blockCheckingWhenAverageChunkSizeGreaterThan": 10000,
+          "blockCheckingWhenLineLengthGreaterThan": 10000,
+          "blockCheckingWhenTextChunkSizeGreaterThan": 10000,
+          "allowCompoundWords": true
+        },
+        "vs-kubernetes": {
+          "vscode-kubernetes.kubectl-path": "/home/vscode/.local/share/mise/installs/kubectl/latest/bin/kubectl"
+        },
+        "editor.detectIndentation": false,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.formatOnSave": true,
+        "editor.renderWhitespace": "all",
+        "editor.rulers": [
+          120,
+          180
+        ],
+        "files.eol": "\n",
+        "files.watcherExclude": {
+          "**/node_modules/*/**": true,
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/.hg/**": true
+        },
+        "[markdown]": {
+          "editor.defaultFormatter": "darkriszty.markdown-table-prettify",
+          "rewrap.autoWrap.enabled": false,
+          "rewrap.wrappingColumn": 180
+        },
+        "markdownlint.config": {
+          "MD030": false,
+          "MD033": false,
+          "MD024": {
+            "siblings_only": true
+          }
+        },
+        "helm-intellisense.lintFileOnSave": true,
+        "helm-intellisense.customValueFileNames": [
+          "values.yaml"
+        ],
+        "markdown.extension.orderedList.autoRenumber": true,
+        "markdown.extension.toc.levels": "2..6",
+        "shellcheck.customArgs": [
+          "-x" // allows shellcheck to evaluate "sourced" scripts. see https://www.shellcheck.net/wiki/SC1091
+        ],
+        "shellcheck.exclude": [
+          "SC2188" // This is excluded here because inline disable doesn't seem to work for this rule.
+        ],
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/bin/zsh"
+          }
+        },
+        "terminal.integrated.automationProfile.linux": {
+          "path": "/bin/zsh"
+        },
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "reformat": true,
+        "todo-tree.general.tags": [
+          "TODO:",
+          "NOTE:",
+          "WOOF:",
+          "WARNING:",
+          "FIXME:"
+        ],
+        "todo-tree.highlights.customHighlight": {
+          "TODO:": {
+            "hideFromTree": false,
+            "icon": "check",
+            "background": "#00620a",
+            "foreground": "#fff",
+            "iconColour": "#00620a",
+            "type": "whole-line",
+            "gutterIcon": true
+          },
+          "NOTE:": {
+            "hideFromTree": true,
+            "icon": "note",
+            "background": "#1422e1",
+            "foreground": "#fff",
+            "iconColour": "#1422e1",
+            "type": "tag-and-comment",
+            "gutterIcon": true
+          },
+          "WOOF:": {
+            "hideFromTree": false,
+            "icon": "squirrel",
+            "background": "#ffbf00",
+            "foreground": "#000",
+            "iconColour": "#ffbf00",
+            "type": "whole-line",
+            "gutterIcon": true
+          },
+          "WARNING:": {
+            "hideFromTree": true,
+            "icon": "alert",
+            "background": "#ff8716",
+            "foreground": "#000",
+            "iconColour": "#ff8716",
+            "type": "tag-and-comment",
+            "gutterIcon": true
+          },
+          "FIXME:": {
+            "hideFromTree": false,
+            "icon": "bug",
+            "background": "#840000",
+            "foreground": "#fff",
+            "iconColour": "#e30000",
+            "type": "whole-line",
+            "gutterIcon": true
+          }
+        }
+      }
+    }
+  }
+}
