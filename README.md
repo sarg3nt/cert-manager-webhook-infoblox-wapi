@@ -13,7 +13,7 @@
 
 An InfoBlox WAPI webhook for cert-manager.
 
-This project provides a custom [ACME DNS01 Challenge Provider](https://cert-manager.io/docs/configuration/acme/dns01) as a webhook for [cert-manager](https://cert-manager.io/). This webhook integrates cert-manager with InfoBlox WAPI is a REST API. You can learn more about WAPI in this [PDF](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-infoblox-rest-api.pdf).
+This project provides a custom [ACME DNS01 Challenge Provider](https://cert-manager.io/docs/configuration/acme/dns01) as a webhook for [cert-manager](https://cert-manager.io/). This webhook integrates cert-manager with InfoBlox WAPI via its REST API. You can learn more about WAPI in this [PDF](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-infoblox-rest-api.pdf).
 
 This implementation is based on [infoblox-go-client](https://github.com/infobloxopen/infoblox-go-client) library.
 
@@ -92,25 +92,25 @@ helm -n cert-manager install webhook-infoblox-wapi deploy/cert-manager-webhook-i
 ```
 
 #### Values
-| Name                           | Description                                                                                                                                                                                                                                                                                                                                                                         | Value                                              |
-|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| nameOverride                   | String to partially override chart name.                                                                                                                                                                                                                                                                                                                                            | ""                                                 |
-| fullNameOverride               | String to fully override chart fullname.                                                                                                                                                                                                                                                                                                                                            | ""                                                 |
+| Name                           | Description                                                                                                                                                                                                                                                                                                                                                                       | Value                                              |
+|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
+| nameOverride                   | String to partially override chart name.                                                                                                                                                                                                                                                                                                                                          | ""                                                 |
+| fullNameOverride               | String to fully override chart fullname.                                                                                                                                                                                                                                                                                                                                          | ""                                                 |
 | groupName                      | The GroupName here is used to identify your company or business unit that created this webhook. This name will need to be referenced in each Issuer's `webhook` stanza to inform cert-manager of where to send ChallengePayload resources in order to solve the DNS01 challenge. This group name should be **unique**, hence using your own company's domain here is recommended. | acme.mycompany.com                                 |
-| certManager.namespace          | Namespace where cert-manager is deployed.                                                                                                                                                                                                                                                                                                                                           | cert-manager                                       |
-| certManager.serviceAccountName | Service account name of cert-manager.                                                                                                                                                                                                                                                                                                                                               | cert-manager                                       |
-| rootCACertificate.duration     | Duration of root CA certificate                                                                                                                                                                                                                                                                                                                                                     | 43800h                                             |
-| servingCertificate.duration    | Duration of serving certificate                                                                                                                                                                                                                                                                                                                                                     | 8760h                                              |
-| image.repository               | Deployment image repository                                                                                                                                                                                                                                                                                                                                                         | ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi |
-| image.tag                      | Deployment image tag                                                                                                                                                                                                                                                                                                                                                                | 1.5                                                |
-| image.pullPolicy               | Image pull policy                                                                                                                                                                                                                                                                                                                                                                   | IfNotPresent                                       |
-| secretVolume.hostPath          | Location of a secrets file on the host file system to use instead of a Kubernetes secret                                                                                                                                                                                                                                                                                            | /etc/secrets/secrets.json                          |
-| service.type                   | Service type to expose                                                                                                                                                                                                                                                                                                                                                              | ClusterIP                                          |
-| service.port                   | Service port to expose                                                                                                                                                                                                                                                                                                                                                              | 443                                                |
-| resources                      | Deployment resource limits                                                                                                                                                                                                                                                                                                                                                          | {}                                                 |
-| nodeSelector                   | Deployment node selector object                                                                                                                                                                                                                                                                                                                                                     | {}                                                 |
-| tolerations                    | Deployment tolerations                                                                                                                                                                                                                                                                                                                                                              | []                                                 |
-| affinity                       | Deployment affinity                                                                                                                                                                                                                                                                                                                                                                 | {}                                                 |
+| certManager.namespace          | Namespace where cert-manager is deployed.                                                                                                                                                                                                                                                                                                                                         | cert-manager                                       |
+| certManager.serviceAccountName | Service account name of cert-manager.                                                                                                                                                                                                                                                                                                                                             | cert-manager                                       |
+| rootCACertificate.duration     | Duration of root CA certificate                                                                                                                                                                                                                                                                                                                                                   | 43800h                                             |
+| servingCertificate.duration    | Duration of serving certificate                                                                                                                                                                                                                                                                                                                                                   | 8760h                                              |
+| image.repository               | Deployment image repository                                                                                                                                                                                                                                                                                                                                                       | ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi |
+| image.tag                      | Deployment image tag                                                                                                                                                                                                                                                                                                                                                              | 1.5                                                |
+| image.pullPolicy               | Image pull policy                                                                                                                                                                                                                                                                                                                                                                 | IfNotPresent                                       |
+| secretVolume.hostPath          | Location of a secrets file on the host file system to use instead of a Kubernetes secret                                                                                                                                                                                                                                                                                          | /etc/secrets/secrets.json                          |
+| service.type                   | Service type to expose                                                                                                                                                                                                                                                                                                                                                            | ClusterIP                                          |
+| service.port                   | Service port to expose                                                                                                                                                                                                                                                                                                                                                            | 443                                                |
+| resources                      | Deployment resource limits                                                                                                                                                                                                                                                                                                                                                        | {}                                                 |
+| nodeSelector                   | Deployment node selector object                                                                                                                                                                                                                                                                                                                                                   | {}                                                 |
+| tolerations                    | Deployment tolerations                                                                                                                                                                                                                                                                                                                                                            | []                                                 |
+| affinity                       | Deployment affinity                                                                                                                                                                                                                                                                                                                                                               | {}                                                 |
 
 ### Infoblox User Account
 
@@ -200,6 +200,12 @@ getUserFromVolume: true
 
 ### Issuer Examples
 
+An issuer is the method that Cert-Manager will use to request a certificate and the configuration Let's Encrypt will use to validate that the requester (you) owns the domain the certificate request is for.
+
+The part of an issuer that defines the use of this webhook plugin starts in the `webhook` section as shown in the examples below.
+
+All settings under `config` are specific to this plugin.  See the list of [Issuer Webhook Configuration Options](#issuer-webhook-configuration-options) below.
+
 See: [Cert Manager Issuers](https://cert-manager.io/docs/concepts/issuer/) for more information.
 
 There are two different kind of issuers:
@@ -225,8 +231,9 @@ spec:
           groupName: acme.mycompany.com
           solverName: infoblox-wapi
           config:
-            host: infoblox.fqdn
-            view: "InfoBlox View"
+            host: my-infoblox.company.com # required
+            view: "InfoBlox View" # required
+            zone: "Infoblox zone" # optional
             usernameSecretRef:
               name: infoblox-credentials
               key: username
@@ -254,7 +261,7 @@ spec:
           groupName: acme.mycompany.com
           solverName: infoblox-wapi
           config:
-            host: infoblox.fqdn
+            host: my-infoblox.company.com
             view: "InfoBlox View"
             getUserFromVolume: true
 ```
@@ -275,10 +282,11 @@ spec:
     solvers:
     - dns01:
         webhook:
+          # TODO: Document groupName better
           groupName: acme.mycompany.com
           solverName: infoblox-wapi
           config:
-            host: infoblox.fqdn
+            host: my-infoblox.company.com
             view: "InfoBlox View"
             getUserFromVolume: true
 ```
@@ -290,14 +298,17 @@ This is the full list of webhook configuration options:
 
 - `host`: FQDN or IP address of the InfoBlox server.
 - `view`: DNS View in the InfoBlox server to manipulate TXT records in.
-- `usernameSecretRef`: Reference to the secret name holding the username for the InfoBlox server (optional if getUserFromVolume is used)
-- `passwordSecretRef`: Reference to the secret name holding the password for the InfoBlox server (optional if getUserFromVolume is used)
+- `zone`: An Infoblox zone to create the TXT record in. (default: "")
+- `usernameSecretRef`: Reference to the secret name holding the username for the InfoBlox server (optional if getUserFromVolume is true)
+- `passwordSecretRef`: Reference to the secret name holding the password for the InfoBlox server (optional if getUserFromVolume is true)
 - `getUserFromVolume: true`: Get the Infoblox user from the host file system. (default: false)
 - `port`: Port of the InfoBlox server (default: 443).
-- `version`: Version of the InfoBlox server (default: 2.5).
+- `version`: Version of the InfoBlox server (default: 2.10).
 - `sslVerify`: Verify SSL connection (default: false).
 - `httpRequestTimeout`: Timeout for HTTP request to the InfoBlox server, in seconds (default: 60).
 - `httpPoolConnections`: Maximum number of connections to the InfoBlox server (default: 10).
+- `ttl`: The time to live of the TXT record. (default: 90)
+- `useTtl`: Whether or not to use the ttl.  (default: true)
 
 ### Creating Certificates
 
