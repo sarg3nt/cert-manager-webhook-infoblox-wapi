@@ -39,7 +39,6 @@ https://github.com/cert-manager/webhook-example.
     - [Manually](#manually)
     - [Ingress Annotations](#ingress-annotations)
     - [Setting Default Issuer in Let's Encrypt](#setting-default-issuer-in-lets-encrypt)
-- [Running the test suite](#running-the-test-suite)
 - [Building](#building)
 - [Contributions](#contributions)
 - [License](#license)
@@ -236,7 +235,6 @@ spec:
           config:
             host: my-infoblox.company.com # required
             view: "InfoBlox View" # required
-            zone: "Infoblox zone" # optional
             usernameSecretRef:
               name: infoblox-credentials
               key: username
@@ -301,7 +299,6 @@ This is the full list of webhook configuration options:
 - `groupName`: This must match the `groupName` you specified in the Helm chart config during install.
 - `host`: FQDN or IP address of the InfoBlox server.
 - `view`: DNS View in the InfoBlox server to manipulate TXT records in.
-- `zone`: An Infoblox zone to create the TXT record in. (default: "")
 - `usernameSecretRef`: Reference to the secret name holding the username for the InfoBlox server (optional if getUserFromVolume is true)
 - `passwordSecretRef`: Reference to the secret name holding the password for the InfoBlox server (optional if getUserFromVolume is true)
 - `getUserFromVolume: true`: Get the Infoblox user from the host file system. (default: false)
@@ -369,7 +366,7 @@ ingressShim:
 
 Once this is done you can then use the `kubernetes.io/tls-acme: "true"` annotation and the default issuer will be used.
 
-## Running the test suite
+<!-- ## Running the test suite
 
 Requirements:
 
@@ -381,7 +378,7 @@ You can then run the test suite with:
 
 ```bash
 TEST_ZONE_NAME=example.com. make test
-```
+``` -->
 
 ## Building
 
