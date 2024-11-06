@@ -28,8 +28,6 @@ jobs:
     permissions:
       contents: write # for actions/checkout to fetch code and for SBOM to push results
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      #TODO: Look at removing on next release of trivy-action
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     runs-on: "ubuntu-latest"
     steps:
       - name: Harden Runner
