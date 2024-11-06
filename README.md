@@ -62,7 +62,7 @@ Note that other versions might work, but have not been tested.
 
 ### Install Cert Manager
 
-Follow [instructions](https://cert-manager.io/docs/installation/) to install Cert Manager.
+Follow the [instructions](https://cert-manager.io/docs/installation/) to install Cert Manager.
 
 ### Install infoblox-wapi Webhook
 
@@ -166,7 +166,7 @@ subjects:
 ```
 
 Then create a `ClusterIssuer` with the following in the `config` section.  
-See full examples below.
+See [Issuer Examples](#issuer-examples)
 
 ```yaml
 usernameSecretRef:
@@ -192,7 +192,7 @@ The values must be base64 encoded.
 ```
 
 Then create a `ClusterIssuer` with the following in the `config` section.  
-See full examples below.
+See [Issuer Examples](#issuer-examples)
 
 ```yaml
 getUserFromVolume: true
@@ -221,13 +221,16 @@ metadata:
   name: letsencrypt-staging
 spec:
   acme:
+    # The email matching the account that your Lets Encrypt account key was created in.
     email: your.email@example.com
+    # What Lets Encrypt server to use. This one is for staging certificates during development.
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-account-key
     solvers:
     - dns01:
         webhook:
+          # groupName must match the groupName you set while installing this plugin via the Helm chart.
           groupName: acme.mycompany.com
           solverName: infoblox-wapi
           config:
@@ -282,7 +285,6 @@ spec:
     solvers:
     - dns01:
         webhook:
-          # TODO: Document groupName better
           groupName: acme.mycompany.com
           solverName: infoblox-wapi
           config:
@@ -296,6 +298,7 @@ spec:
 
 This is the full list of webhook configuration options:
 
+- `groupName`: This must match the `groupName` you specified in the Helm chart config during install.
 - `host`: FQDN or IP address of the InfoBlox server.
 - `view`: DNS View in the InfoBlox server to manipulate TXT records in.
 - `zone`: An Infoblox zone to create the TXT record in. (default: "")
