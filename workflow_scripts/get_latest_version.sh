@@ -15,7 +15,8 @@ main() {
   fi
 
   echo "Getting latest tag using gh and the GitHub API"
-  # TODO: try to use 'gh api /repos/sarg3nt/go-dev-container/releases/latest'
+  # TODO: try to use releases/latest instead of tags
+  # gh api /repos/sarg3nt/cert-manager-webhook-infoblox-wapi/releases/latest | jq -r '.tag_name'
   latest_version=$(gh api /repos/sarg3nt/cert-manager-webhook-infoblox-wapi/tags |
     jq -r '[.[] | select(.name | startswith("v"))] | sort_by(.name) | reverse | .[0].name')
   echo "Latest Version: $latest_version"

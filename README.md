@@ -13,7 +13,7 @@
 
 An InfoBlox WAPI webhook for cert-manager.
 
-This project provides a custom [ACME DNS01 Challenge Provider](https://cert-manager.io/docs/configuration/acme/dns01) as a webhook for [cert-manager](https://cert-manager.io/). This webhook integrates cert-manager with InfoBlox WAPI via its REST API. You can learn more about WAPI in this [PDF](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-infoblox-rest-api.pdf).
+This project provides a custom [ACME DNS01 Challenge Provider](https://cert-manager.io/docs/configuration/acme/dns01) as a webhook for [Cert Manager](https://cert-manager.io/). This webhook integrates Cert Manager with InfoBlox WAPI via its REST API. You can learn more about WAPI in this [PDF](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-infoblox-rest-api.pdf).
 
 This implementation is based on [infoblox-go-client](https://github.com/infobloxopen/infoblox-go-client) library.
 
@@ -22,8 +22,8 @@ https://github.com/cert-manager/webhook-example.
 
 - [Requirements](#requirements)
 - [Installation](#installation)
-  - [Install Cert-manager](#install-cert-manager)
-  - [Install infoblox-wapi webhook](#install-infoblox-wapi-webhook)
+  - [Install Cert Manager](#install-cert-manager)
+  - [Install infoblox-wapi Webhook](#install-infoblox-wapi-webhook)
     - [Using the Public Helm Chart](#using-the-public-helm-chart)
     - [From Source](#from-source)
     - [Values](#values)
@@ -60,11 +60,11 @@ Note that other versions might work, but have not been tested.
 2. Infoblox-wapi webhook
 3. Issuer
 
-### Install Cert-manager
+### Install Cert Manager
 
-Follow [instructions](https://cert-manager.io/docs/installation/) to install cert-manager.
+Follow [instructions](https://cert-manager.io/docs/installation/) to install Cert Manager.
 
-### Install infoblox-wapi webhook
+### Install infoblox-wapi Webhook
 
 At a minimum you will need to customize `groupName` with your own group name. See [deploy/cert-manager-webhook-infoblox-wapi/values.yaml](./deploy/cert-manager-webhook-infoblox-wapi/values.yaml) for an in-depth explanation and other values that might require tweaking. With either method below, follow [helm instructions](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) to customize your deployment.
 
@@ -200,7 +200,7 @@ getUserFromVolume: true
 
 ### Issuer Examples
 
-An issuer is the method that Cert-Manager will use to request a certificate and the configuration Let's Encrypt will use to validate that the requester (you) owns the domain the certificate request is for.
+An issuer is the method that Cert Manager will use to request a certificate and the configuration Let's Encrypt will use to validate that the requester (you) owns the domain the certificate request is for.
 
 The part of an issuer that defines the use of this webhook plugin starts in the `webhook` section as shown in the examples below.
 
