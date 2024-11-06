@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REPOSITORY: ${{ github.repository }}
   VERSION: ""
   TAG_MAJOR: ""
   TAG_MINOR: ""
@@ -46,7 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY: ${{ env.REGISTRY }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          REPOSITORY: ${{ env.REPOSITORY }}
 
       - name: Log into registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
