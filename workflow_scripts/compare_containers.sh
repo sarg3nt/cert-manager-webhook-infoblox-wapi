@@ -17,7 +17,9 @@ main() {
   fi
 
   echo "Downloading the diffoci binary."
-  curl -L -o diffoci https://github.com/reproducible-containers/diffoci/releases/download/v0.1.5/diffoci-v0.1.5.linux-amd64
+  latest_release_url=$(gh release view -R reproducible-containers/diffoci --json assets -q '.assets[] | select(.name | test("linux-amd64")) | .url')
+  echo "Using the latest release URL: $latest_release_url"
+  curl -L -o diffoci "$latest_release_url"
   chmod +x diffoci
   # Github runner does not print empty echos. :(
   echo "-"
@@ -35,15 +37,15 @@ main() {
   set -e
   echo "-"
 
-  # Check if the number of lines in DIFF_RESULT is greater than 2
+  # Check the exit code of diffoci. If it is zero then there are no changes, otherwise there are.
   if [ $DIFFOCI_EXIT_CODE -eq 0 ]; then
     echo "The images appear to be the same, exiting."
     echo "continue=false" >>"$GITHUB_OUTPUT"
     exit 0
-  else
-    echo "The images appear to be different.  Continuing."
-    echo "continue=true" >>"$GITHUB_OUTPUT"
   fi
+
+  echo "The images appear to be different.  Continuing."
+  echo "continue=true" >>"$GITHUB_OUTPUT"
 }
 
 if ! (return 0 2>/dev/null); then

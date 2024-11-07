@@ -80,16 +80,18 @@ type customDNSProviderConfig struct {
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
 	Host                string                   `json:"host"`
-	Version             string                   `json:"version"             default:"2.5"`
 	Port                string                   `json:"port"                default:"443"`
+	Version             string                   `json:"version"             default:"2.10"`
 	UsernameSecretRef   cmmeta.SecretKeySelector `json:"usernameSecretRef"`
 	PasswordSecretRef   cmmeta.SecretKeySelector `json:"passwordSecretRef"`
 	View                string                   `json:"view"`
+	Zone                string                   `json:"zone"                default:""`
 	SslVerify           bool                     `json:"sslVerify"           default:"false"`
 	HttpRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
 	HttpPoolConnections int                      `json:"httpPoolConnections" default:"10"`
 	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
-	//TODO: Add ability to pass port, zones and the ttl
+	TTL                 uint32                   `json:"ttl"                 default:"90"`
+	UseTtl              bool                     `json:"useTtl"              default:"true"`
 }
 
 type usernamePassword struct {
@@ -128,7 +130,7 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 	// Find or create TXT record
 	recordName := c.DeDot(ch.ResolvedFQDN)
 
-	recordRef, err := c.GetTXTRecord(ib, recordName, ch.Key, cfg.View)
+	recordRef, err := c.GetTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.Zone)
 	if err != nil {
 		logf.V(logf.ErrorLevel).InfoS("CMI: Error getting TXT record", "name", recordName, "error", err)
 		return err
@@ -137,7 +139,7 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 	if recordRef != "" {
 		logf.V(logf.InfoLevel).InfoS("CMI: TXT record already present", "name", recordName, "ref", recordRef)
 	} else {
-		recordRef, err := c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View)
+		recordRef, err := c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.Zone, cfg.TTL, cfg.UseTtl)
 		if err != nil {
 			return err
 		}
@@ -168,7 +170,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *whapi.ChallengeRequest) error {
 	// Find and delete TXT record
 	recordName := c.DeDot(ch.ResolvedFQDN)
 
-	recordRef, err := c.GetTXTRecord(ib, recordName, ch.Key, cfg.View)
+	recordRef, err := c.GetTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.Zone)
 	if err != nil {
 		return err
 	}
@@ -344,7 +346,7 @@ func (c *customDNSProviderSolver) getSecret(sel cmmeta.SecretKeySelector, namesp
 }
 
 // Get the ref for TXT record in InfoBlox given its name, text and view
-func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name string, text string, view string) (string, error) {
+func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name string, text string, view string, zone string) (string, error) {
 	logf.V(logf.InfoLevel).InfoS("CMI: Getting TXT record")
 	var records []ibclient.RecordTXT
 	recordTXT := ibclient.NewEmptyRecordTXT()
@@ -352,6 +354,7 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 		"name": name,
 		"text": text,
 		"view": view,
+		"zone": zone,
 	}
 	err := ib.GetObject(recordTXT, "", ibclient.NewQueryParams(false, params), &records)
 	logf.V(logf.InfoLevel).Infof("CMI: Number of records is: %s", strconv.Itoa(len(records)))
@@ -369,10 +372,10 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 }
 
 // Create a TXT record in Infoblox
-func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string) (string, error) {
+func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string, zone string, ttl uint32, useTtl bool) (string, error) {
 	logf.V(logf.InfoLevel).InfoS("CMI: Creating TXT record")
-	// TODO: add support zones and ttl
-	recordTXT := ibclient.NewRecordTXT(view, "", name, text, 140, true, "", nil)
+
+	recordTXT := ibclient.NewRecordTXT(view, zone, name, text, ttl, useTtl, "", nil)
 	logf.V(logf.InfoLevel).InfoS("CMI: RecordTXT:", recordTXT)
 	return ib.CreateObject(recordTXT)
 }
