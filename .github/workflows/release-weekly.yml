@@ -66,6 +66,7 @@ jobs:
         id: compare_versions
         run: bash ${GITHUB_WORKSPACE}/workflow_scripts/compare_containers.sh
         env:
+          GH_TOKEN: ${{ github.token }}
           TAG_OLD: ${{ env.TAG_OLD }}
           TAG_PATCH: ${{ env.TAG_PATCH }}
 
