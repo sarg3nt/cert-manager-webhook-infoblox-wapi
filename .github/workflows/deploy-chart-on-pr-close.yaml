@@ -43,7 +43,7 @@ jobs:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
     # This will release the chart to the gh-pages branch
-    - name: Run chart-releaser
+    - name: Run Chart-Releaser
       uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
       with: 
         mark_as_latest: false
