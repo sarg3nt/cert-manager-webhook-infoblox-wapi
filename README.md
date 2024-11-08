@@ -51,7 +51,8 @@ https://github.com/cert-manager/webhook-example.
 - kubernetes 1.21+
 - cert-manager 1.5+
 
-Note that other versions might work, but have not been tested.
+!!! note "NOTE:"
+    Other versions might work, but have not been tested.
 
 ## Installation
 
