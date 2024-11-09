@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Get the latest version
+      - name: Get the Latest Version
         id: get_version
         run: bash ${GITHUB_WORKSPACE}/workflow_scripts/get_latest_version.sh
         env:
@@ -48,7 +48,7 @@ jobs:
           REGISTRY: ${{ env.REGISTRY }}
           REPOSITORY: ${{ env.REPOSITORY }}
 
-      - name: Log into registry
+      - name: Log Into Registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
           registry: ${{ env.REGISTRY }}
@@ -66,6 +66,7 @@ jobs:
         id: compare_versions
         run: bash ${GITHUB_WORKSPACE}/workflow_scripts/compare_containers.sh
         env:
+          GH_TOKEN: ${{ github.token }}
           TAG_OLD: ${{ env.TAG_OLD }}
           TAG_PATCH: ${{ env.TAG_PATCH }}
 
@@ -95,9 +96,11 @@ jobs:
     outputs:
       changeset: ${{ steps.updater.outputs.changeset }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      - uses: lrstanley/helm-version-updater@91c756dbbc1ac62747df7131c32b0fbc8788222f # v1.0.4
+      - name: Helm Version Updater
+        uses: lrstanley/helm-version-updater@91c756dbbc1ac62747df7131c32b0fbc8788222f # v1.0.4
         id: updater
         with:
           check-dir: charts/
@@ -116,11 +119,13 @@ jobs:
       matrix:
         change: ${{ fromJSON(needs.get-charts.outputs.changeset).changes }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: lrstanley/helm-version-updater@91c756dbbc1ac62747df7131c32b0fbc8788222f # v1.0.4
+      - name: Update Helm Chart Versions
+        uses: lrstanley/helm-version-updater@91c756dbbc1ac62747df7131c32b0fbc8788222f # v1.0.4
         id: updater
         with:
           check-dir: ${{ matrix.change.path }}

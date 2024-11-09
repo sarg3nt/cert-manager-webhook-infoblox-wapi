@@ -15,7 +15,7 @@ An InfoBlox WAPI webhook for cert-manager.
 
 This project provides a custom [ACME DNS01 Challenge Provider](https://cert-manager.io/docs/configuration/acme/dns01) as a webhook for [Cert Manager](https://cert-manager.io/). This webhook integrates Cert Manager with InfoBlox WAPI via its REST API. You can learn more about WAPI in this [PDF](https://www.infoblox.com/wp-content/uploads/infoblox-deployment-infoblox-rest-api.pdf).
 
-This implementation is based on [infoblox-go-client](https://github.com/infobloxopen/infoblox-go-client) library.
+This implementation is based on the [infoblox-go-client](https://github.com/infobloxopen/infoblox-go-client) library.
 
 This project is a fork of https://github.com/luisico/cert-manager-webhook-infoblox-wapi, which was forked from 
 https://github.com/cert-manager/webhook-example.
@@ -23,14 +23,14 @@ https://github.com/cert-manager/webhook-example.
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Install Cert Manager](#install-cert-manager)
-  - [Install infoblox-wapi Webhook](#install-infoblox-wapi-webhook)
+  - [Install Infoblox Wapi Webhook](#install-infoblox-wapi-webhook)
     - [Using the Public Helm Chart](#using-the-public-helm-chart)
     - [From Source](#from-source)
     - [Values](#values)
   - [Infoblox User Account](#infoblox-user-account)
     - [Kubernetes Secret](#kubernetes-secret)
     - [Hostpath Volume Mount](#hostpath-volume-mount)
-  - [Issuer Examples](#issuer-examples)
+  - [Create Issuers](#create-issuers)
     - [Cluster Issuer for Let's Encrypt Staging using Secrets For the Infoblox Account](#cluster-issuer-for-lets-encrypt-staging-using-secrets-for-the-infoblox-account)
     - [Cluster Issuer for Let's Encrypt Production using Volume Mount For the Infoblox Account](#cluster-issuer-for-lets-encrypt-production-using-volume-mount-for-the-infoblox-account)
     - [Issuer for Let's Encrypt Production using Volume Mount For the Infoblox Account](#issuer-for-lets-encrypt-production-using-volume-mount-for-the-infoblox-account)
@@ -51,22 +51,24 @@ https://github.com/cert-manager/webhook-example.
 - kubernetes 1.21+
 - cert-manager 1.5+
 
-Note that other versions might work, but have not been tested.
+> [!NOTE]
+> Other versions might work, but have not been tested.
 
 ## Installation
 
-1. Cert-manager
-2. Infoblox-wapi webhook
-3. Issuer
+There are three steps needed to make this work.
+
+1. [Install Cert Manager](#install-cert-manager)
+2. [Install Infoblox Wapi Webhook](#install-infoblox-wapi-webhook) (this plugin)
+3. [Create Issuers](#create-issuers)
 
 ### Install Cert Manager
 
 Follow the [instructions](https://cert-manager.io/docs/installation/) to install Cert Manager.
 
-### Install infoblox-wapi Webhook
+### Install Infoblox Wapi Webhook
 
 At a minimum you will need to customize `groupName` with your own group name. See [deploy/cert-manager-webhook-infoblox-wapi/values.yaml](./deploy/cert-manager-webhook-infoblox-wapi/values.yaml) for an in-depth explanation and other values that might require tweaking. With either method below, follow [helm instructions](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) to customize your deployment.
-
 
 Docker images are stored in GitHub's [ghcr.io](ghcr.io) registry, specifically at [ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi](ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi).
 
@@ -191,13 +193,13 @@ The values must be base64 encoded.
 ```
 
 Then create a `ClusterIssuer` with the following in the `config` section.  
-See [Issuer Examples](#issuer-examples)
+See [Create Issuers](#create-issuers)
 
 ```yaml
 getUserFromVolume: true
 ```
 
-### Issuer Examples
+### Create Issuers
 
 An issuer is the method that Cert Manager will use to request a certificate and the configuration Let's Encrypt will use to validate that the requester (you) owns the domain the certificate request is for.
 
@@ -205,11 +207,11 @@ The part of an issuer that defines the use of this webhook plugin starts in the 
 
 All settings under `config` are specific to this plugin.  See the list of [Issuer Webhook Configuration Options](#issuer-webhook-configuration-options) below.
 
-See: [Cert Manager Issuers](https://cert-manager.io/docs/concepts/issuer/) for more information.
+See: [Cert Manager Issuers](https://cert-manager.io/docs/concepts/issuer/) in the official Cert Manager documentation for more information.
 
-There are two different kind of issuers:
+There are two different kinds of issuers:
 - `Issuer` is for a specific namespace.
-- `ClusterIssuer` is for an entire cluster.
+- `ClusterIssuer` is for an entire cluster and is most often used.
 
 #### Cluster Issuer for Let's Encrypt Staging using Secrets For the Infoblox Account
 
@@ -290,7 +292,8 @@ spec:
             view: "InfoBlox View"
             getUserFromVolume: true
 ```
-> **NOTE:** You can create more than one `ClusterIssuer`.  For example, one for Let's Encrypt staging and one for Let's Encrypt production.  You can then reference which one you want to use when creating a cert or annotating an ingress.  See below for examples.
+> [!NOTE] 
+> You can create more than one `ClusterIssuer`.  For example, one for Let's Encrypt staging and one for Let's Encrypt production.  You can then reference which one you want to use when creating a cert or annotating an ingress.  See below for examples.
 
 #### Issuer Webhook Configuration Options
 
@@ -352,8 +355,9 @@ metadata:
 # Rest of normal ingress config goes here.
 ```
 
-> **NOTE:** To use `kubernetes.io/tls-acme: "true"`, a `defaultIssuerName` must be set.  
-See: [Setting Default Issuer in Let's Encrypt](#setting-default-issuer-in-lets-encrypt)
+> [!NOTE] 
+> To use `kubernetes.io/tls-acme: "true"`, a `defaultIssuerName` must be set.  
+> See: [Setting Default Issuer in Let's Encrypt](#setting-default-issuer-in-lets-encrypt)
 
 #### Setting Default Issuer in Let's Encrypt
 
