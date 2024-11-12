@@ -86,6 +86,7 @@ jobs:
           body: "A Weekly release containing upgrades to system packages in the base Alpine Linux container."
           makeLatest: true
           prerelease: false
+          generateReleaseNotes: true
           tag: ${{ env.VERSION }}
 
   get-charts:

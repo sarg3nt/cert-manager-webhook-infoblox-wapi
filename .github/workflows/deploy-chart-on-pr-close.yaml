@@ -48,4 +48,4 @@ jobs:
       with: 
         mark_as_latest: false
       env:
-        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        CR_TOKEN: "${{ secrets.USER_PAT }}"
