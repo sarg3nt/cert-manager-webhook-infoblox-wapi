@@ -106,7 +106,7 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.USER_PAT }}
           add-paths: "${{ matrix.change.chart.path }}"
           title: >-
             update chart ${{ matrix.change.chart.name }}
