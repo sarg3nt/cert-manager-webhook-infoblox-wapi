@@ -14,7 +14,6 @@ permissions:
 jobs:
   on_chart_pr_close:
     name: Deploy Chart on PR Close
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
