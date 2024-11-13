@@ -132,7 +132,7 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 
 	recordRef, err := c.GetTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.Zone)
 	if err != nil {
-		logf.V(logf.ErrorLevel).InfoS("CMI: Error getting TXT record", "name", recordName, "error", err)
+		logf.V(logf.InfoLevel).InfoS("CMI: Error getting TXT record", "name", recordName, "error", err)
 		return err
 	}
 
@@ -202,7 +202,7 @@ func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stop
 	logf.V(logf.InfoLevel).InfoS("CMI: Initializing")
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
-		logf.V(logf.ErrorLevel).InfoS("CMI: Error initializing k8s client.", err)
+		logf.V(logf.InfoLevel).InfoS("CMI: Error initializing k8s client.", err)
 		return err
 	}
 
@@ -322,7 +322,7 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 
 	ib, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 	if err != nil {
-		logf.V(logf.ErrorLevel).InfoS("CMI: Error creating Infoblox client", "error", err)
+		logf.V(logf.InfoLevel).InfoS("CMI: Error creating Infoblox client", "error", err)
 		return nil, err
 	}
 
