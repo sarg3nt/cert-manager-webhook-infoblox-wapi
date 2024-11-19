@@ -46,7 +46,7 @@ jobs:
       # During a release workflow the new git tag is provided and is automatically used by this step to generate the new image tags.
       - name: Extract Docker Metadata
         id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+        uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
         with:
           images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
           tags: |
