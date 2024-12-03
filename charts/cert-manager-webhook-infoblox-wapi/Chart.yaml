@@ -1,7 +1,7 @@
 apiVersion: v1
 name: cert-manager-webhook-infoblox-wapi
-version: 1.7.1
-appVersion: 1.7.1
+version: 1.7.2
+appVersion: 1.7.2
 description: Cert-manager webhook for interacting with InfoBlox WAPI servers
 home: https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
 keywords:
