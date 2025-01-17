@@ -22,7 +22,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
 
 # https://hub.docker.com/_/alpine/
-FROM alpine:3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS alpine-upgraded
+FROM alpine:3@sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a AS alpine
 
 # Update all apk packages and install ca-certificates
 RUN apk upgrade --no-cache && \
@@ -31,8 +31,8 @@ RUN apk upgrade --no-cache && \
 # Main image
 FROM scratch
 # Removes upgrade artifacts to make the image smaller
-COPY --from=alpine-upgraded / /
+COPY --from=alpine /etc/ssl/certs /etc/ssl/certs
 # Copy over the compiled webhook executable from the builder.
-COPY --from=build /workspace/webhook /usr/local/bin/webhook
+COPY --from=build /workspace/webhook /webhook
 
-ENTRYPOINT ["webhook", "-v=4"]
+ENTRYPOINT ["./webhook", "-v=4"]
