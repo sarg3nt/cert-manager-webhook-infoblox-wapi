@@ -22,7 +22,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
 
 # https://hub.docker.com/_/alpine/
-FROM alpine:3@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45 AS alpine-upgraded
+FROM alpine:3@sha256:b97e2a89d0b9e4011bb88c02ddf01c544b8c781acf1f4d559e7c8f12f1047ac3 AS alpine-upgraded
 
 # Update all apk packages and install ca-certificates
 RUN apk upgrade --no-cache && \
