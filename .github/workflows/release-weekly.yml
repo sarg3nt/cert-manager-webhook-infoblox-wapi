@@ -1,9 +1,9 @@
-name: Weekly Release
+name: Monthly Release
 
 on:
   schedule:
     # If the schedule stops working, see the docs: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule
-    - cron: '0 0 * * 0' # Runs weekly at 00:00 UTC on Sunday
+    - cron: '0 0 1 * *' # Runs monthly at 00:00 UTC on the first day of the month
   workflow_dispatch: # Allows manual triggering
 
 env:
@@ -20,7 +20,7 @@ permissions: read-all
 
 jobs:
   release-build-and-push:
-    name: Weekly Release Build and Push
+    name: Monthly Release Build and Push
     runs-on: ubuntu-latest
     outputs:
       continue: ${{ steps.compare_versions.outputs.continue }}
@@ -83,7 +83,7 @@ jobs:
         if: steps.compare_versions.outputs.continue == 'true'
         uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87
         with:
-          body: "A Weekly release containing upgrades to system packages in the base Alpine Linux container."
+          body: "A Monthly release for updating system packages, go versions, etc."
           makeLatest: true
           prerelease: false
           generateReleaseNotes: true
