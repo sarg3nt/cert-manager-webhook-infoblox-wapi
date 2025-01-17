@@ -5,9 +5,9 @@ go 1.23.2
 require (
 	github.com/cert-manager/cert-manager v1.16.2
 	github.com/infobloxopen/infoblox-go-client/v2 v2.8.0
+	k8s.io/apiextensions-apiserver v0.31.4
 	k8s.io/apimachinery v0.32.0
 	k8s.io/client-go v0.32.0
-	k8s.io/apiextensions-apiserver v0.31.4
 )
 
 require (
@@ -98,12 +98,12 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.32.0 // indirect
-	k8s.io/klog/v2 v2.130.1 // indirect
-	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738 // indirect
 	k8s.io/apiserver v0.31.4 // indirect
 	k8s.io/component-base v0.31.4 // indirect
+	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kms v0.31.4 // indirect
-	k8s.io/kube-openapi v0.0.0-20240903163716-9e1beecbcb38 // indirect
+	k8s.io/kube-openapi v0.0.0-20241105132330-32ad38e42d3f // indirect
+	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738 // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.30.3 // indirect
 	sigs.k8s.io/controller-runtime v0.19.0 // indirect
 	sigs.k8s.io/gateway-api v1.1.0 // indirect
