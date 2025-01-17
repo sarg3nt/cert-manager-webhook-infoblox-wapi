@@ -29,7 +29,7 @@ jobs:
       packages: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f
+        uses: step-security/harden-runner@c95a14d0e5bab51a9f56296a4eb0e416910cd350
         with:
           disable-sudo: true
           egress-policy: audit
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build Docker image
         id: build
-        uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d
         with:
           push: false
           tags: ${{ env.TAG_MAJOR }},${{ env.TAG_MINOR }},${{ env.TAG_PATCH }},${{ env.TAG_LATEST }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Push Docker image
         if: steps.compare_versions.outputs.continue == 'true'
-        uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d
         with:
           push: true
           tags: ${{ env.TAG_MAJOR }},${{ env.TAG_MINOR }},${{ env.TAG_PATCH }},${{ env.TAG_LATEST }}
@@ -81,7 +81,7 @@ jobs:
       - name: Create Release
         id: create_release
         if: steps.compare_versions.outputs.continue == 'true'
-        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5
+        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87
         with:
           body: "A Weekly release containing upgrades to system packages in the base Alpine Linux container."
           makeLatest: true
