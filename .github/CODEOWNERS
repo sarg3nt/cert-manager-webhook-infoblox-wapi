@@ -1,11 +1,10 @@
-# Specify owners for the entire repository
-* @sarg3nt @BrickCForce @Stanrofl @aidanleuck
-
-# Specify owners for specific directories
-# /docs/ @docs-owner
-
-# Specify owners for specific files
-# /scripts/deploy.sh @devops-owner
-
-# Specify owners for specific file types
-# *.md @documentation-owner
+* @sarg3nt
+/.devcontainer/ @BrickCForce @Stanrofl @aidanleuck
+/charts/ @BrickCForce @Stanrofl @aidanleuck
+/.github/CODEOWNERS @BrickCForce @Stanrofl @aidanleuck
+/.github/dependabot.yml @BrickCForce @Stanrofl @aidanleuck
+/testdata/ @BrickCForce @Stanrofl @aidanleuck
+*.sh @BrickCForce @Stanrofl @aidanleuck
+*.md @BrickCForce @Stanrofl @aidanleuck
+*.go @BrickCForce @Stanrofl @aidanleuck
+/Makefile @BrickCForce @Stanrofl @aidanleuck

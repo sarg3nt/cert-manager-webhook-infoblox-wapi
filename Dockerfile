@@ -31,8 +31,8 @@ RUN apk upgrade --no-cache && \
 # Main image
 FROM scratch
 # Removes upgrade artifacts to make the image smaller
-COPY --from=alpine-upgraded / /
+COPY --from=alpine /etc/ssl/certs /etc/ssl/certs
 # Copy over the compiled webhook executable from the builder.
-COPY --from=build /workspace/webhook /usr/local/bin/webhook
+COPY --from=build /workspace/webhook /webhook
 
-ENTRYPOINT ["webhook", "-v=4"]
+ENTRYPOINT ["./webhook", "-v=4"]
