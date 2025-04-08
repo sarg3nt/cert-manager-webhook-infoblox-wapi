@@ -11,6 +11,12 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
+    paths:
+      - 'charts/**'
+      - 'Dockerfile'
+      - 'go.mod'
+      - 'go.sum'
+      - 'main.go'
   schedule:
     - cron: '19 14 * * 5'
   workflow_dispatch: # Allows manual triggering
