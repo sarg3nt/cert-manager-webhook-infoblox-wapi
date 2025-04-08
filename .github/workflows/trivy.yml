@@ -31,7 +31,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf
         with:
           disable-sudo: true
           egress-policy: audit
@@ -65,7 +65,7 @@ jobs:
           TRIVY_SKIP_JAVA_DB_UPDATE: true
 
       - name: Upload Trivy Results
-        uses: github/codeql-action/upload-sarif@d68b2d4edb4189fd2a5366ac14e72027bd4b37dd
+        uses: github/codeql-action/upload-sarif@fc7e4a0fa01c3cca5fd6a1fddec5c0740c977aa2
         with:
           sarif_file: 'trivy-results.sarif'
 
