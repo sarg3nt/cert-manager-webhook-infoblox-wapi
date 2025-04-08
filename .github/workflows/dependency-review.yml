@@ -8,11 +8,12 @@
 # Source repository: https://github.com/actions/dependency-review-action
 name: 'Dependency Review'
 on: 
-  pull_request:
+  pull_request_target: # Use pull_request_target to access the baseline snapshot
   workflow_dispatch: # Allows manual triggering
 
 permissions:
   contents: read
+  security-events: write # Required for dependency graph access
 
 jobs:
   dependency-review:
