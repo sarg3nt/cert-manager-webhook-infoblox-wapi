@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/cert-manager/cert-manager v1.16.2
-	github.com/infobloxopen/infoblox-go-client/v2 v2.8.0
+	github.com/infobloxopen/infoblox-go-client/v2 v2.9.0
 	k8s.io/apiextensions-apiserver v0.31.4
 	k8s.io/apimachinery v0.31.4
 	k8s.io/client-go v0.31.4
