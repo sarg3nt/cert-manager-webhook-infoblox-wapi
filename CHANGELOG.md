@@ -22,7 +22,19 @@
 - Upgraded k8s.io/apimachinery v0.21.3 to v0.28.1
 - Upgraded k8s.io/client-go v0.21.3 to v0.28.1
 
-## v1.7.0
+## v1.7.0 
+
+- Add zone, ttl and useTtl as options to the plugin by @sarg3nt in #3
+  NOTE: zone is not currently documented as it may be read only in Infoblox. Not sure if this is a problem with our environment or truly not writable in the Infoblox API. We will test more and update as needed.
+- Improve Dockerfile to reduce image size.  No longer contains Alpine OS, just the Go binary and ca-certificates.
+
+
+## V1.8.0
+
+- Improved logging.
+- Troubleshooting for init failures.
+
+## v1.9.0
 
 - Update package dependencies.
 - Upgraded Go 1.23.2 to 1.24.2
