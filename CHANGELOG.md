@@ -21,3 +21,9 @@
 - Upgraded k8s.io/apiextensions-apiserver v0.21.3 to v0.28.1
 - Upgraded k8s.io/apimachinery v0.21.3 to v0.28.1
 - Upgraded k8s.io/client-go v0.21.3 to v0.28.1
+
+## v1.7.0
+
+- Update package dependencies.
+- Upgraded Go 1.23.2 to 1.24.2
+- Various updates to k8s API dependencies.
