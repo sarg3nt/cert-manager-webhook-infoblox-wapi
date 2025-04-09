@@ -132,7 +132,7 @@ jobs:
           check-dir: ${{ matrix.change.path }}
 
       - name: Create PR
-        uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
         with:
           # Must use a create Github secret token or downstream actions will not run.
           token: ${{ secrets.USER_PAT }}
