@@ -68,7 +68,7 @@ Follow the [instructions](https://cert-manager.io/docs/installation/) to install
 
 ### Install Infoblox Wapi Webhook
 
-At a minimum you will need to customize `groupName` with your own group name. See [deploy/cert-manager-webhook-infoblox-wapi/values.yaml](./deploy/cert-manager-webhook-infoblox-wapi/values.yaml) for an in-depth explanation and other values that might require tweaking. With either method below, follow [helm instructions](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) to customize your deployment.
+At a minimum you will need to customize `groupName` with your own group name. See [charts/cert-manager-webhook-infoblox-wapi/values.yaml](./charts/cert-manager-webhook-infoblox-wapi/values.yaml) for an in-depth explanation and other values that might require tweaking. With either method below, follow [helm instructions](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) to customize your deployment.
 
 Docker images are stored in GitHub's [ghcr.io](ghcr.io) registry, specifically at [ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi](ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi).
 
