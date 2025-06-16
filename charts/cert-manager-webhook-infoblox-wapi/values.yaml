@@ -30,7 +30,8 @@ fullnameOverride: ""
 
 # Used if loading the secret from a file on disk.
 secretVolume:
-  hostPath: /etc/secrets/secrets.json
+  hostPath: null
+  # hostPath: /etc/secrets/secrets.json
 
 service:
   type: ClusterIP
