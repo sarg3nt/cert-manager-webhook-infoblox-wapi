@@ -29,7 +29,7 @@ jobs:
       packages: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf
+        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863
         with:
           disable-sudo: true
           egress-policy: audit
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build Docker image
         id: build
-        uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           push: false
           tags: ${{ env.TAG_MAJOR }},${{ env.TAG_MINOR }},${{ env.TAG_PATCH }},${{ env.TAG_LATEST }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Push Docker image
         if: steps.compare_versions.outputs.continue == 'true'
-        uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
         with:
           push: true
           tags: ${{ env.TAG_MAJOR }},${{ env.TAG_MINOR }},${{ env.TAG_PATCH }},${{ env.TAG_LATEST }}
