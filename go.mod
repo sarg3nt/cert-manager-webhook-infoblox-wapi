@@ -1,13 +1,16 @@
+// cspell:disable
 module github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
 
-go 1.24.2
+// https://go.dev/dl/
+go 1.24.4
 
 require (
-	github.com/cert-manager/cert-manager v1.17.1
-	github.com/infobloxopen/infoblox-go-client/v2 v2.9.0
-	k8s.io/apiextensions-apiserver v0.32.3
-	k8s.io/apimachinery v0.32.3
-	k8s.io/client-go v0.32.3
+	github.com/cert-manager/cert-manager v1.18.1
+	github.com/infobloxopen/infoblox-go-client/v2 v2.10.0
+	// Note: 0.33.x is not compatable with cert-manager v1.18.1
+	k8s.io/apiextensions-apiserver v0.32.6
+	k8s.io/apimachinery v0.32.6
+	k8s.io/client-go v0.32.6
 	k8s.io/klog/v2 v2.130.1
 )
 
@@ -79,19 +82,18 @@ require (
 	go.opentelemetry.io/proto/otlp v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.36.0 // indirect
-	golang.org/x/oauth2 v0.24.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/term v0.29.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/oauth2 v0.28.0 // indirect
+	golang.org/x/sync v0.14.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/term v0.32.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
 	golang.org/x/tools v0.28.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
-	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241219192143-6b3ec007d9bb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241219192143-6b3ec007d9bb // indirect
 	google.golang.org/grpc v1.69.2 // indirect
@@ -100,10 +102,10 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/api v0.32.3 // indirect
-	k8s.io/apiserver v0.32.3 // indirect
-	k8s.io/component-base v0.32.3 // indirect
-	k8s.io/kms v0.32.3 // indirect
+	k8s.io/api v0.32.6 // indirect
+	k8s.io/apiserver v0.32.6 // indirect
+	k8s.io/component-base v0.32.6 // indirect
+	k8s.io/kms v0.32.6 // indirect
 	k8s.io/kube-openapi v0.0.0-20241212222426-2c72e554b1e7 // indirect
 	k8s.io/utils v0.0.0-20241210054802-24370beab758 // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.31.1 // indirect
@@ -113,3 +115,6 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.5.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+
+// NOTE: When changing any of the version in the 'require' section above, delete all secondary require statements below
+// and run 'make build' or 'go mod tidy' to regenerate them.
