@@ -5,7 +5,7 @@ module github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
 go 1.24.4
 
 require (
-	github.com/cert-manager/cert-manager v1.18.1
+	github.com/cert-manager/cert-manager v1.18.2
 	github.com/infobloxopen/infoblox-go-client/v2 v2.10.0
 	// Note: 0.33.x is not compatable with cert-manager v1.18.1
 	k8s.io/apiextensions-apiserver v0.32.6
