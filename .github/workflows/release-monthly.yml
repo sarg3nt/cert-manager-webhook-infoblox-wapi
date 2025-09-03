@@ -81,7 +81,7 @@ jobs:
       - name: Create Release
         id: create_release
         if: steps.compare_versions.outputs.continue == 'true'
-        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174
+        uses: ncipollo/release-action@98d25d4189e9b6cee19b8635b1ea5cc39c158a41
         with:
           body: "A Monthly release for updating system packages, go versions, etc."
           makeLatest: true
