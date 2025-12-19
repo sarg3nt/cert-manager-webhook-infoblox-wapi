@@ -4,7 +4,7 @@ OS ?= $(shell $(GO) env GOOS)
 ARCH ?= $(shell $(GO) env GOARCH)
 
 IMAGE_NAME := ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi
-IMAGE_TAG := 1.11.0-CR-1
+IMAGE_TAG := 2.0.0-beta1
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD | sed 's/[\/_]/-/g')
 
 OUT := $(shell pwd)/_out
