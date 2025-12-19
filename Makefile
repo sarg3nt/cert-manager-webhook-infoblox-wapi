@@ -9,25 +9,45 @@ GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD | sed 's/[\/_]/-/g')
 
 OUT := $(shell pwd)/_out
 
-KUBEBUILDER_VERSION=3.13.0
+# K8s version for envtest (can be overridden, e.g., make test ENVTEST_K8S_VERSION=1.31.x)
+ENVTEST_K8S_VERSION ?= 1.31.x
 
 HELM_FILES := $(shell find charts/cert-manager-webhook-infoblox-wapi)
 
-test: _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/etcd _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kube-apiserver _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kubectl
-	TEST_ASSET_ETCD=_test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/etcd \
-	TEST_ASSET_KUBE_APISERVER=_test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kube-apiserver \
-	TEST_ASSET_KUBECTL=_test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kubectl \
+# Install setup-envtest tool
+SETUP_ENVTEST = $(shell pwd)/bin/setup-envtest
+.PHONY: setup-envtest
+setup-envtest: $(SETUP_ENVTEST)
+$(SETUP_ENVTEST): | bin
+	GOBIN=$(shell pwd)/bin $(GO) install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+.PHONY: test
+test: setup-envtest
+	@KUBEBUILDER_ASSETS_PATH="$(shell $(SETUP_ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" && \
+	TEST_ASSET_ETCD="$$KUBEBUILDER_ASSETS_PATH/etcd" \
+	TEST_ASSET_KUBE_APISERVER="$$KUBEBUILDER_ASSETS_PATH/kube-apiserver" \
+	TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS_PATH/kubectl" \
 	$(GO) test -v .
 
-_test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH).tar.gz: | _test
-	curl -fsSL https://go.kubebuilder.io/test-tools/$(KUBEBUILDER_VERSION)/$(OS)/$(ARCH) -o $@
+.PHONY: test-coverage
+test-coverage: setup-envtest
+	@KUBEBUILDER_ASSETS_PATH="$(shell $(SETUP_ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" && \
+	TEST_ASSET_ETCD="$$KUBEBUILDER_ASSETS_PATH/etcd" \
+	TEST_ASSET_KUBE_APISERVER="$$KUBEBUILDER_ASSETS_PATH/kube-apiserver" \
+	TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS_PATH/kubectl" \
+	$(GO) test -coverprofile=coverage.out -covermode=atomic .
 
-_test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/etcd _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kube-apiserver _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)/kubectl: _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH).tar.gz | _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH)
-	tar xfO $< kubebuilder/bin/$(notdir $@) > $@ && chmod +x $@
+.PHONY: test-race
+test-race: setup-envtest
+	@KUBEBUILDER_ASSETS_PATH="$(shell $(SETUP_ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" && \
+	TEST_ASSET_ETCD="$$KUBEBUILDER_ASSETS_PATH/etcd" \
+	TEST_ASSET_KUBE_APISERVER="$$KUBEBUILDER_ASSETS_PATH/kube-apiserver" \
+	TEST_ASSET_KUBECTL="$$KUBEBUILDER_ASSETS_PATH/kubectl" \
+	$(GO) test -race -v .
 
 .PHONY: clean
 clean:
-	rm -r _test $(OUT)
+	rm -rf _test $(OUT) bin coverage.out
 
 .PHONY: build
 build:
@@ -53,5 +73,5 @@ $(OUT)/rendered-manifest.yaml: $(HELM_FILES) | $(OUT)
 		--set image.tag=$(IMAGE_TAG) \
 		charts/cert-manager-webhook-infoblox-wapi > $@
 
-_test $(OUT) _test/kubebuilder-$(KUBEBUILDER_VERSION)-$(OS)-$(ARCH):
+_test $(OUT) bin:
 	mkdir -p $@
