@@ -29,6 +29,8 @@ import (
 const SecretPath = "/etc/secrets/creds.json"
 
 // var _ webhook.Solver = (*customDNSProviderSolver)(nil)
+
+// GroupName is the API group name for the webhook, set via GROUP_NAME environment variable.
 var GroupName = os.Getenv("GROUP_NAME")
 
 func main() {
@@ -90,11 +92,11 @@ type customDNSProviderConfig struct {
 	PasswordSecretRef   cmmeta.SecretKeySelector `json:"passwordSecretRef"`
 	View                string                   `json:"view"`
 	SslVerify           bool                     `json:"sslVerify"           default:"false"`
-	HttpRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
-	HttpPoolConnections int                      `json:"httpPoolConnections" default:"10"`
+	HTTPRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
+	HTTPPoolConnections int                      `json:"httpPoolConnections" default:"10"`
 	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
 	TTL                 uint32                   `json:"ttl"                 default:"300"`
-	UseTtl              bool                     `json:"useTtl"              default:"true"`
+	UseTTL              bool                     `json:"useTtl"              default:"true"`
 }
 
 type usernamePassword struct {
@@ -159,7 +161,7 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 
 	// Create the TXT record
 	klog.InfoS("CMI: Creating TXT record", "name", recordName)
-	recordRef, err = c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.TTL, cfg.UseTtl)
+	recordRef, err = c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.TTL, cfg.UseTTL)
 	klog.InfoS("CMI: Record ref after creating txt record", "recordRef", recordRef)
 
 	if err != nil {
@@ -312,11 +314,11 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 	if cfg.Version == "" {
 		cfg.Version = "2.10"
 	}
-	if cfg.HttpRequestTimeout <= 0 {
-		cfg.HttpRequestTimeout = 60
+	if cfg.HTTPRequestTimeout <= 0 {
+		cfg.HTTPRequestTimeout = 60
 	}
-	if cfg.HttpPoolConnections <= 0 {
-		cfg.HttpPoolConnections = 10
+	if cfg.HTTPPoolConnections <= 0 {
+		cfg.HTTPPoolConnections = 10
 	}
 	if cfg.TTL == 0 {
 		cfg.TTL = 300
@@ -335,7 +337,7 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 		Password: password,
 	}
 
-	transportConfig := ibclient.NewTransportConfig(strconv.FormatBool(cfg.SslVerify), cfg.HttpRequestTimeout, cfg.HttpPoolConnections)
+	transportConfig := ibclient.NewTransportConfig(strconv.FormatBool(cfg.SslVerify), cfg.HTTPRequestTimeout, cfg.HTTPPoolConnections)
 	requestBuilder := &ibclient.WapiRequestBuilder{}
 	requestor := &ibclient.WapiHttpRequestor{}
 
@@ -399,10 +401,10 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 }
 
 // Create a TXT record in Infoblox
-func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string, ttl uint32, useTtl bool) (string, error) {
+func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string, ttl uint32, useTTL bool) (string, error) {
 	klog.InfoS("CMI: Creating TXT record", "name", name)
 
-	recordTXT := ibclient.NewRecordTXT(view, "", name, text, ttl, useTtl, "", nil)
+	recordTXT := ibclient.NewRecordTXT(view, "", name, text, ttl, useTTL, "", nil)
 	klog.InfoS("CMI: RecordTXT", "recordTXT", recordTXT)
 	return ib.CreateObject(recordTXT)
 }
