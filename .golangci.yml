@@ -1,45 +1,46 @@
 # golangci-lint configuration for cert-manager-webhook-infoblox-wapi
 # See https://golangci-lint.run/usage/configuration/
 
+version: 2
+
 run:
   timeout: 5m
   modules-download-mode: readonly
 
 linters:
   enable:
-    - errcheck # Check for unchecked errors
-    - gosimple # Simplify code
-    - govet # Vet examines Go source code
-    - ineffassign # Detect ineffectual assignments
-    - staticcheck # Advanced Go linter
-    - unused # Check for unused code
-    - gofmt # Check formatting
-    - goimports # Check imports
-    - misspell # Check for commonly misspelled words
-    - revive # Fast, configurable, extensible, flexible linter
-    - gosec # Inspect code for security problems
-    - bodyclose # Check HTTP response body is closed
-    - noctx # Detect sending HTTP request without context.Context
-    - errorlint # Better error handling checks
-    - exportloopref # Detect pointers to loop variables
-    - gocritic # Extensible Go source code linter
-    - gocyclo # Compute cyclomatic complexity
-    - goprintffuncname # Check printf-like function names
-    - unconvert # Remove unnecessary type conversions
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - misspell
+    - revive
+    - gosec
+    - bodyclose
+    - noctx
+    - errorlint
+    - copyloopvar
+    - gocritic
+    - gocyclo
+    - goprintffuncname
+    - unconvert
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
 
 linters-settings:
   gocyclo:
     min-complexity: 15
-
   govet:
     enable-all: true
     disable:
-      - shadow # Too many false positives
-
+      - shadow
   gosec:
     excludes:
-      - G404 # Use of weak random number generator (math/rand) - acceptable for non-crypto use
-
+      - G404
   revive:
     rules:
       - name: exported
@@ -50,24 +51,17 @@ linters-settings:
 
 issues:
   exclude-rules:
-    # Exclude some linters from running on tests files
     - path: _test\.go
       linters:
         - gocyclo
         - errcheck
         - gosec
-
-    # Exclude generated code
     - path: "webhook/"
       linters:
         - revive
         - stylecheck
-
   max-issues-per-linter: 0
   max-same-issues: 0
 
 output:
-  formats:
-    - format: colored-line-number
-  print-issued-lines: true
-  print-linter-name: true
+  format: colored-line-number
