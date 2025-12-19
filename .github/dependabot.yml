@@ -2,17 +2,35 @@
 # https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
 version: 2
 updates:
+  # Go module dependencies - checked monthly on the first Monday
   - package-ecosystem: gomod
     directory: /
     schedule:
-      interval: daily
+      interval: monthly
+      day: monday
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
 
+  # GitHub Actions - checked monthly on the first Monday, all bundled into one PR
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: monthly
+      day: monday
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
+  # Docker dependencies - checked monthly on the first Monday
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: daily
+      interval: monthly
+      day: monday
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
