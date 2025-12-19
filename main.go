@@ -1,14 +1,17 @@
 package main
 
+// Webhook example plugin:
+// https://github.com/cert-manager/webhook-example
+
 // cspell:ignore cmapi cmacme klog
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
@@ -90,7 +93,7 @@ type customDNSProviderConfig struct {
 	HttpRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
 	HttpPoolConnections int                      `json:"httpPoolConnections" default:"10"`
 	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
-	TTL                 uint32                   `json:"ttl"                 default:"90"`
+	TTL                 uint32                   `json:"ttl"                 default:"300"`
 	UseTtl              bool                     `json:"useTtl"              default:"true"`
 }
 
@@ -142,20 +145,29 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 		return err
 	}
 
-	if recordRef == "" {
-		klog.InfoS("CMI: Creating new TXT record as one was not found", "name", recordName)
-		recordRef, err := c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.TTL, cfg.UseTtl)
-		klog.InfoS("CMI: Record ref after creating new txt record: ", "recordRef", recordRef)
-
+	// If record exists, delete it first to ensure we create with correct value
+	// This ensures idempotent behavior as required by cert-manager
+	if recordRef != "" {
+		klog.InfoS("CMI: TXT record already exists, deleting before recreating", "name", recordName, "ref", recordRef)
+		err = c.DeleteTXTRecord(ib, recordRef)
 		if err != nil {
-			klog.InfoS("CMI: Error creating TXT record", "name", recordName, "error", err.Error())
+			klog.InfoS("CMI: Error deleting existing TXT record", "name", recordName, "error", err.Error())
 			return err
 		}
-
-		klog.InfoS("CMI: Created new TXT record", "name", recordName, "ref", recordRef)
-	} else {
-		klog.InfoS("CMI: TXT record already present, deleting.", "name", recordName, "ref", recordRef)
+		klog.InfoS("CMI: Deleted existing TXT record", "name", recordName, "ref", recordRef)
 	}
+
+	// Create the TXT record
+	klog.InfoS("CMI: Creating TXT record", "name", recordName)
+	recordRef, err = c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.TTL, cfg.UseTtl)
+	klog.InfoS("CMI: Record ref after creating txt record", "recordRef", recordRef)
+
+	if err != nil {
+		klog.InfoS("CMI: Error creating TXT record", "name", recordName, "error", err.Error())
+		return err
+	}
+
+	klog.InfoS("CMI: Successfully created TXT record", "name", recordName, "ref", recordRef)
 
 	klog.InfoS("CMI: Done presenting for DNS record", "DNS", ch.DNSName)
 	return nil
@@ -294,26 +306,20 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 	}
 
 	// Set default values if needed
-	_t := reflect.TypeOf(customDNSProviderConfig{})
 	if cfg.Port == "" {
-		_f, _ := _t.FieldByName("Port")
-		cfg.Port = _f.Tag.Get("default")
+		cfg.Port = "443"
 	}
 	if cfg.Version == "" {
-		_f, _ := _t.FieldByName("Version")
-		cfg.Version = _f.Tag.Get("default")
+		cfg.Version = "2.10"
 	}
 	if cfg.HttpRequestTimeout <= 0 {
-		_f, _ := _t.FieldByName("HttpRequestTimeout")
-		if i, err := strconv.Atoi(_f.Tag.Get("default")); err == nil {
-			cfg.HttpRequestTimeout = i
-		}
+		cfg.HttpRequestTimeout = 60
 	}
 	if cfg.HttpPoolConnections <= 0 {
-		_f, _ := _t.FieldByName("HttpPoolConnections")
-		if i, err := strconv.Atoi(_f.Tag.Get("default")); err == nil {
-			cfg.HttpPoolConnections = i
-		}
+		cfg.HttpPoolConnections = 10
+	}
+	if cfg.TTL == 0 {
+		cfg.TTL = 300
 	}
 
 	// Initialize ibclient
@@ -344,15 +350,18 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 
 // Resolve the value of a secret given a SecretKeySelector with name and key parameters
 func (c *customDNSProviderSolver) getSecret(sel cmmeta.SecretKeySelector, namespace string) (string, error) {
-	klog.InfoS("CMI: Getting secret")
-	secret, err := c.client.CoreV1().Secrets(namespace).Get(context.Background(), sel.Name, metav1.GetOptions{})
+	klog.InfoS("CMI: Getting secret", "name", sel.Name, "namespace", namespace)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	secret, err := c.client.CoreV1().Secrets(namespace).Get(ctx, sel.Name, metav1.GetOptions{})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get secret %s/%s: %w", namespace, sel.Name, err)
 	}
 
 	secretData, ok := secret.Data[sel.Key]
 	if !ok {
-		return "", err
+		return "", fmt.Errorf("key %s not found in secret %s/%s", sel.Key, namespace, sel.Name)
 	}
 
 	return strings.TrimSuffix(string(secretData), "\n"), nil
@@ -373,14 +382,20 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 
 	if len(records) > 0 {
 		klog.InfoS("CMI: Found TXT record")
-		return records[0].Ref, err
-	} else {
-		if _, ok := err.(*ibclient.NotFoundError); ok {
-			klog.InfoS("CMI: No TXT record found.  This can be normal for the first run.")
-			return "", nil
-		}
+		return records[0].Ref, nil
+	}
+
+	// No records found - check if it's a NotFoundError (expected) or real error
+	if _, ok := err.(*ibclient.NotFoundError); ok {
+		klog.InfoS("CMI: No TXT record found. This can be normal for the first run.")
+		return "", nil
+	}
+
+	if err != nil {
 		return "", err
 	}
+
+	return "", nil
 }
 
 // Create a TXT record in Infoblox
