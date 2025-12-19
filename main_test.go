@@ -1,3 +1,7 @@
+// go:build integration
+//go:build integration
+// +build integration
+
 package main
 
 import (

@@ -62,7 +62,7 @@ type customDNSProviderSolver struct {
 	// 3. uncomment the relevant code in the Initialize method below
 	// 4. ensure your webhook's service account has the required RBAC role
 	//    assigned to it for interacting with the Kubernetes APIs you need.
-	client *kubernetes.Clientset
+	client kubernetes.Interface
 }
 
 // customDNSProviderConfig is a structure that is used to decode into when
@@ -86,17 +86,17 @@ type customDNSProviderConfig struct {
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
 	Host                string                   `json:"host"`
-	Port                string                   `json:"port"                default:"443"`
-	Version             string                   `json:"version"             default:"2.10"`
+	Port                string                   `json:"port"`
+	Version             string                   `json:"version"`
 	UsernameSecretRef   cmmeta.SecretKeySelector `json:"usernameSecretRef"`
 	PasswordSecretRef   cmmeta.SecretKeySelector `json:"passwordSecretRef"`
 	View                string                   `json:"view"`
-	SslVerify           bool                     `json:"sslVerify"           default:"false"`
-	HTTPRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
-	HTTPPoolConnections int                      `json:"httpPoolConnections" default:"10"`
-	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
-	TTL                 uint32                   `json:"ttl"                 default:"300"`
-	UseTTL              bool                     `json:"useTtl"              default:"true"`
+	SslVerify           bool                     `json:"sslVerify"`
+	HTTPRequestTimeout  int                      `json:"httpRequestTimeout"`
+	HTTPPoolConnections int                      `json:"httpPoolConnections"`
+	GetUserFromVolume   bool                     `json:"getUserFromVolume"`
+	TTL                 uint32                   `json:"ttl"`
+	UseTTL              bool                     `json:"useTtl"`
 }
 
 type usernamePassword struct {
@@ -252,7 +252,33 @@ func loadConfig(cfgJSON *apiextensionsv1.JSON) (customDNSProviderConfig, error) 
 		return cfg, fmt.Errorf("CMI: Error decoding solver config: %v", err)
 	}
 
+	// Apply default values for fields that weren't set
+	applyDefaults(&cfg)
+
 	return cfg, nil
+}
+
+// applyDefaults sets default values for configuration fields that are zero/empty.
+// This follows Go best practice of explicit default handling.
+func applyDefaults(cfg *customDNSProviderConfig) {
+	if cfg.Port == "" {
+		cfg.Port = "443"
+	}
+	if cfg.Version == "" {
+		cfg.Version = "2.10"
+	}
+	if cfg.HTTPRequestTimeout <= 0 {
+		cfg.HTTPRequestTimeout = 60
+	}
+	if cfg.HTTPPoolConnections <= 0 {
+		cfg.HTTPPoolConnections = 10
+	}
+	if cfg.TTL == 0 {
+		cfg.TTL = 300
+	}
+	// UseTTL defaults to true if not explicitly set
+	// Note: this can't distinguish between false and unset with bool type
+	// For now, we'll assume it should default to true in getIbClient if needed
 }
 
 // Initialize and return infoblox client connector
@@ -307,7 +333,8 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 		return nil, fmt.Errorf("CMI: No secretRefs or secretPath provided")
 	}
 
-	// Set default values if needed
+	// Note: defaults are now applied in loadConfig/applyDefaults
+	// This code is kept for defensive programming in case applyDefaults wasn't called
 	if cfg.Port == "" {
 		cfg.Port = "443"
 	}
