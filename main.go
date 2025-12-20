@@ -333,24 +333,6 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 		return nil, fmt.Errorf("CMI: No secretRefs or secretPath provided")
 	}
 
-	// Note: defaults are now applied in loadConfig/applyDefaults
-	// This code is kept for defensive programming in case applyDefaults wasn't called
-	if cfg.Port == "" {
-		cfg.Port = "443"
-	}
-	if cfg.Version == "" {
-		cfg.Version = "2.10"
-	}
-	if cfg.HTTPRequestTimeout <= 0 {
-		cfg.HTTPRequestTimeout = 60
-	}
-	if cfg.HTTPPoolConnections <= 0 {
-		cfg.HTTPPoolConnections = 10
-	}
-	if cfg.TTL == 0 {
-		cfg.TTL = 300
-	}
-
 	// Initialize ibclient
 	hostConfig := ibclient.HostConfig{
 		Host:    cfg.Host,

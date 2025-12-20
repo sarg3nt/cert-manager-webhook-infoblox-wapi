@@ -404,8 +404,8 @@ func TestGetIbClient_VolumeFileNotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "does not exist")
 }
 
-// TestGetIbClient_AppliesDefaults tests that defaults are applied defensively
-func TestGetIbClient_AppliesDefaults(t *testing.T) {
+// TestGetIbClient_WithDefaultsFromLoadConfig tests that defaults from loadConfig work with getIbClient
+func TestGetIbClient_WithDefaultsFromLoadConfig(t *testing.T) {
 	secret := &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "infoblox-creds",
@@ -420,10 +420,9 @@ func TestGetIbClient_AppliesDefaults(t *testing.T) {
 	fakeClient := fake.NewSimpleClientset(secret)
 	solver := &customDNSProviderSolver{client: fakeClient}
 
-	// Config without defaults set
+	// Simulate config loaded through loadConfig (which applies defaults)
 	cfg := customDNSProviderConfig{
 		Host: "infoblox.example.com",
-		// Port, Version, etc. not set
 		UsernameSecretRef: cmmeta.SecretKeySelector{
 			LocalObjectReference: cmmeta.LocalObjectReference{
 				Name: "infoblox-creds",
@@ -437,12 +436,14 @@ func TestGetIbClient_AppliesDefaults(t *testing.T) {
 			Key: "password",
 		},
 	}
+	// Apply defaults as loadConfig would do
+	applyDefaults(&cfg)
 
 	ib, err := solver.getIbClient(&cfg, "test-namespace")
 
 	require.NoError(t, err)
 	assert.NotNil(t, ib)
-	// Verify defaults were applied
+	// Verify defaults were applied by applyDefaults (simulating loadConfig behavior)
 	assert.Equal(t, "443", cfg.Port)
 	assert.Equal(t, "2.10", cfg.Version)
 	assert.Equal(t, 60, cfg.HTTPRequestTimeout)

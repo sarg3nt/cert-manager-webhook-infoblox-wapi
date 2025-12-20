@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: '1.23.5' # Keep in sync with go.mod
+  GO_VERSION: '1.25.5' # Keep in sync with go.mod
 
 jobs:
   lint:

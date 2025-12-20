@@ -4,7 +4,8 @@ OS ?= $(shell $(GO) env GOOS)
 ARCH ?= $(shell $(GO) env GOARCH)
 
 IMAGE_NAME := ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi
-IMAGE_TAG := 2.0.0-beta1
+# IMAGE_TAG is derived from Chart.yaml appVersion if not set
+IMAGE_TAG ?= $(shell grep '^appVersion:' charts/cert-manager-webhook-infoblox-wapi/Chart.yaml | cut -d' ' -f2)
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD | sed 's/[\/_]/-/g')
 
 OUT := $(shell pwd)/_out
