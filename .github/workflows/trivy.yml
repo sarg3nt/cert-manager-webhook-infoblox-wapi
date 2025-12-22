@@ -7,18 +7,18 @@ name: Trivy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
-      - 'charts/**'
-      - 'Dockerfile'
-      - 'go.mod'
-      - 'go.sum'
-      - 'main.go'
+      - "charts/**"
+      - "Dockerfile"
+      - "go.mod"
+      - "go.sum"
+      - "main.go"
   schedule:
-    - cron: '19 14 * * 5'
+    - cron: "19 14 * * 5"
   workflow_dispatch: # Allows manual triggering
 
 env:
@@ -70,11 +70,12 @@ jobs:
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.30.0
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          image-ref: "${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}"
+          format: "template"
+          template: "@/contrib/sarif.tpl"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH"
+          scan-type: "image"
         env:
           TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db
           TRIVY_SKIP_JAVA_DB_UPDATE: true
@@ -82,5 +83,4 @@ jobs:
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@0499de31b99561a6d14a36a5f662c2a54f91beee # v4.31.2
         with:
-          sarif_file: 'trivy-results.sarif'
-
+          sarif_file: "trivy-results.sarif"

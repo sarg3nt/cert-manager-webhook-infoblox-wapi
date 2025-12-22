@@ -4,13 +4,13 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'charts/**'
-      - '.github/workflows/helm.yml'
+      - "charts/**"
+      - ".github/workflows/helm.yml"
   pull_request:
     branches: ["main"]
     paths:
-      - 'charts/**'
-      - '.github/workflows/helm.yml'
+      - "charts/**"
+      - ".github/workflows/helm.yml"
   workflow_dispatch: # Allows manual triggering
 
 permissions:
@@ -81,6 +81,19 @@ jobs:
         with:
           cluster_name: kind
 
+      - name: Set Up Go
+        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.2.0
+        with:
+          go-version: "1.25.5"
+          cache: true
+
+      - name: Build and Load Docker Image
+        run: |
+          # Build the Docker image
+          docker build -t ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi:test .
+          # Load it into Kind
+          kind load docker-image ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi:test --name kind
+
       - name: Install cert-manager
         run: |
           kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
@@ -97,6 +110,8 @@ jobs:
               --create-namespace \
               --namespace webhook-test \
               --set groupName=acme.example.com \
+              --set image.tag=test \
+              --set image.pullPolicy=Never \
               --wait \
               --timeout 5m
             
