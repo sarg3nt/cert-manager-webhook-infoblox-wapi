@@ -1,12 +1,14 @@
+// Package main implements a cert-manager ACME DNS01 webhook for Infoblox WAPI.
+// This webhook allows cert-manager to use Infoblox DNS for ACME DNS01 challenges.
+//
+// Based on the webhook example: https://github.com/cert-manager/webhook-example
 package main
-
-// Webhook example plugin:
-// https://github.com/cert-manager/webhook-example
 
 // cspell:ignore cmapi cmacme klog
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -26,7 +28,8 @@ import (
 	"k8s.io/klog/v2"
 )
 
-const SecretPath = "/etc/secrets/creds.json"
+// SecretPath is the file path where credentials are mounted, not actual credentials.
+const SecretPath = "/etc/secrets/creds.json" //nolint:gosec // G101: This is a file path, not hardcoded credentials
 
 // var _ webhook.Solver = (*customDNSProviderSolver)(nil)
 
@@ -225,7 +228,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *whapi.ChallengeRequest) error {
 // provider accounts.
 // The stopCh can be used to handle early termination of the webhook, in cases
 // where a SIGTERM or similar signal is sent to the webhook process.
-func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
+func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, _ <-chan struct{}) error {
 	klog.InfoS("CMI: Initializing k8s client")
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
@@ -249,7 +252,7 @@ func loadConfig(cfgJSON *apiextensionsv1.JSON) (customDNSProviderConfig, error) 
 		return cfg, nil
 	}
 	if err := json.Unmarshal(cfgJSON.Raw, &cfg); err != nil {
-		return cfg, fmt.Errorf("CMI: Error decoding solver config: %v", err)
+		return cfg, fmt.Errorf("CMI: Error decoding solver config: %w", err)
 	}
 
 	// Apply default values for fields that weren't set
@@ -397,7 +400,8 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 	}
 
 	// No records found - check if it's a NotFoundError (expected) or real error
-	if _, ok := err.(*ibclient.NotFoundError); ok {
+	var notFoundErr *ibclient.NotFoundError
+	if errors.As(err, &notFoundErr) {
 		klog.InfoS("CMI: No TXT record found. This can be normal for the first run.")
 		return "", nil
 	}
@@ -426,10 +430,8 @@ func (c *customDNSProviderSolver) DeleteTXTRecord(ib ibclient.IBConnector, ref s
 	return err
 }
 
-// Remove trailing dot
-func (c *customDNSProviderSolver) DeDot(string string) string {
+// DeDot removes the trailing dot from a fully qualified domain name.
+func (c *customDNSProviderSolver) DeDot(fqdn string) string {
 	klog.InfoS("CMI: Removing trailing dot")
-	result := strings.TrimSuffix(string, ".")
-
-	return result
+	return strings.TrimSuffix(fqdn, ".")
 }
