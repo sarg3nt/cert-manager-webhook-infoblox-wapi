@@ -397,7 +397,66 @@ TEST_ZONE_NAME=example.com. make test
 
 ## Contributions
 
-If you would like to contribute to this project, please, open a PR via GitHub. Thanks.
+We welcome contributions to this project! Please follow these guidelines:
+
+### Commit Message Convention
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automated semantic versioning and changelog generation. All commits should follow this format:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Commit Types:**
+- `feat:` - A new feature (triggers **minor** version bump)
+- `fix:` - A bug fix (triggers **patch** version bump)
+- `docs:` - Documentation only changes
+- `style:` - Code style changes (formatting, missing semi-colons, etc.)
+- `refactor:` - Code changes that neither fix a bug nor add a feature
+- `perf:` - Performance improvements
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks, dependency updates
+- `ci:` - CI/CD configuration changes
+- `build:` - Build system or external dependency changes
+- `revert:` - Reverting a previous commit
+
+**Breaking Changes:**
+- Add `!` after the type (e.g., `feat!:`) or include `BREAKING CHANGE:` in the footer to trigger a **major** version bump
+
+**Examples:**
+```bash
+feat: add support for custom DNS zones
+fix: resolve timeout issue in webhook validation
+docs: improve installation instructions
+chore: update Go dependencies to 1.25.5
+feat!: change API endpoint structure
+fix(helm): correct service port configuration
+```
+
+### Release Process
+
+This project uses [Release Please](https://github.com/googleapis/release-please) for automated releases:
+
+1. When commits are pushed to `main`, Release Please analyzes commit messages
+2. It creates/updates a "Release PR" with the changelog and version bump
+3. When the Release PR is merged, it automatically:
+   - Creates a GitHub release with the changelog
+   - Creates a git tag
+   - Triggers the Docker image build and push
+   - Updates the Helm chart version
+
+### Pull Request Guidelines
+
+- PR titles should also follow the Conventional Commits format
+- Keep changes focused and atomic
+- Update documentation as needed
+- Ensure all CI checks pass
+
+For more details, see [.github/commit-instructions.md](.github/commit-instructions.md).
 
 ## License
 
