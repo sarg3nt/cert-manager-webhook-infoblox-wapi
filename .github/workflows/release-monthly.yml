@@ -35,7 +35,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -98,7 +98,7 @@ jobs:
       changeset: ${{ steps.updater.outputs.changeset }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Helm Version Updater
         uses: lrstanley/helm-version-updater@91c756dbbc1ac62747df7131c32b0fbc8788222f # v1.0.4
@@ -121,7 +121,7 @@ jobs:
         change: ${{ fromJSON(needs.get-charts.outputs.changeset).changes }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
