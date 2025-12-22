@@ -105,7 +105,7 @@ jobs:
           check-dir: ${{ matrix.change.path }}
 
       - name: Create PR
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725
         with:
           token: ${{ secrets.USER_PAT }}
           add-paths: "${{ matrix.change.chart.path }}"
