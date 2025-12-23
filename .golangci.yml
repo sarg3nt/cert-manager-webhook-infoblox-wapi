@@ -27,38 +27,38 @@ linters:
     - unconvert
     - gofmt
     - goimports
-
-linters-settings:
-  gocyclo:
-    min-complexity: 15
-  govet:
-    enable-all: true
-    disable:
-      - shadow
-  gosec:
-    excludes:
-      - G404
-  revive:
+  settings:
+    gocyclo:
+      min-complexity: 15
+    govet:
+      enable-all: true
+      disable:
+        - shadow
+    gosec:
+      excludes:
+        - G404
+    revive:
+      rules:
+        - name: exported
+          disabled: false
+          arguments:
+            - "checkPrivateReceivers"
+            - "sayRepetitiveInsteadOfStutters"
+  exclusions:
     rules:
-      - name: exported
-        disabled: false
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
+      - path: _test\.go
+        linters:
+          - gocyclo
+          - errcheck
+          - gosec
+      - path: "webhook/"
+        linters:
+          - revive
+          - stylecheck
 
 issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - gosec
-    - path: "webhook/"
-      linters:
-        - revive
-        - stylecheck
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  max-per-linter: 0
+  max-same: 0
 
 output:
   formats:
