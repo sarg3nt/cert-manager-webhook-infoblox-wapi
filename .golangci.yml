@@ -61,6 +61,7 @@ issues:
   max-same-issues: 0
 
 output:
-  text:
-    path: stdout
-    colors: true
+  formats:
+    text:
+      path: stdout
+      colors: true
