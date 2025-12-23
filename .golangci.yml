@@ -57,11 +57,10 @@ linters:
           - stylecheck
 
 issues:
-  max-per-linter: 0
-  max-same: 0
+  max-issues-per-linter: 0
+  max-same-issues: 0
 
 output:
-  formats:
-    text:
-      path: stdout
-      colors: true
+  text:
+    path: stdout
+    colors: true
