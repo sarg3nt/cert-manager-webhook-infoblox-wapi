@@ -1,5 +1,22 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [1.13.0](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v1.12.0...v1.13.0) (2025-12-23)
+
+
+### Features
+
+* Add CI workflow for Go project with linting, testing, and Docker build ([8a3d0ed](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8a3d0ed4235bfdea23883828689041fb17af4852))
+* add commit message guidelines and release process documentation ([985e46b](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/985e46bfa84190d707da0e03353d34330491a4d1))
+* Add golangci-lint configuration file for enhanced linting ([8a3d0ed](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8a3d0ed4235bfdea23883828689041fb17af4852))
+* Add Helm workflow for linting and testing Helm charts ([8a3d0ed](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8a3d0ed4235bfdea23883828689041fb17af4852))
+* Add ShellCheck workflow for shell script linting ([8a3d0ed](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8a3d0ed4235bfdea23883828689041fb17af4852))
+* Add workflow to deploy Helm charts on PR close ([8a3d0ed](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8a3d0ed4235bfdea23883828689041fb17af4852))
+
+
+### Bug Fixes
+
+* Update main_test.go to skip integration tests if TEST_ZONE_NAME is not set and enable conformance tests ([8a3d0ed](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8a3d0ed4235bfdea23883828689041fb17af4852))
+
 ## [1.12.0](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v1.11.0...v1.12.0) (2025-12-23)
 
 
