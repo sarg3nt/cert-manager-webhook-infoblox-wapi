@@ -1,7 +1,6 @@
-# VER=1.11.0 && IMAGE="ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi" && docker build . -t ${IMAGE}:${VER} && docker push ${IMAGE}:${VER} && docker tag ${IMAGE}:${VER} ${IMAGE}:latest && docker push ${IMAGE}:latest
-
+# Use make to manually build the container.
 # https://hub.docker.com/_/golang/
-FROM golang:1.24.4 AS build_deps
+FROM golang:1.25.5@sha256:36b4f45d2874905b9e8573b783292629bcb346d0a70d8d7150b6df545234818f AS build_deps
 
 LABEL org.opencontainers.image.source=https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
 
@@ -17,6 +16,7 @@ RUN go mod download
 FROM build_deps AS build
 
 COPY . .
+RUN go mod tidy
 RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
 
 FROM scratch

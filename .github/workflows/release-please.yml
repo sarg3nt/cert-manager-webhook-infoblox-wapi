@@ -1,0 +1,53 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Create Release PR
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Run Release Please
+        id: release
+        uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
+        with:
+          # Token with permissions to create releases and PRs
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Release type determines how versions are calculated
+          # 'go' type works well for Go projects with go.mod
+          release-type: go
+
+      - name: Log Release Info
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "Release created: ${{ steps.release.outputs.tag_name }}"
+          echo "Version: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}"
+          echo "Release PR: ${{ steps.release.outputs.pr }}"
+
+  # Note: Your existing release.yml workflow will automatically trigger
+  # when the release tag is created by release-please, so no additional
+  # trigger is needed here. The release.yml workflow handles:
+  # - Building and pushing Docker images
+  # - Creating Helm chart update PRs

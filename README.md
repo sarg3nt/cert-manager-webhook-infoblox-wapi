@@ -2,13 +2,15 @@
 # Cert Manager Webhook for InfoBlox WAPI
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/badge)](https://scorecard.dev/viewer/?uri=github.com/sarg3nt/cert-manager-webhook-infoblox-wapi)
+[![CI](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/ci.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/ci.yml)
+[![Helm](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/helm.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/helm.yml)
 [![CodeQL](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/codeql.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/codeql.yml)
-[![trivy](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/trivy.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/trivy.yml)
+[![Trivy](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/trivy.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/trivy.yml)
+[![Scorecard Analyzer](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/scorecard.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/scorecard.yml)  
 [![Release](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/release.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/release.yml)
-[![Weekly Release](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/release-weekly.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/release-weekly.yml)  
-[![Scorecard Analyzer](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/scorecard.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/scorecard.yml)
-[![Dependabot Updates](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/dependabot/dependabot-updates)
+[![Monthly Release](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/release-monthly.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/release-monthly.yml)
 [![Dependency Review](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/dependency-review.yml)
+[![Dependabot Updates](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/actions/workflows/dependabot/dependabot-updates)
 ****
 
 An InfoBlox WAPI webhook for cert-manager.
@@ -70,7 +72,7 @@ Follow the [instructions](https://cert-manager.io/docs/installation/) to install
 
 At a minimum you will need to customize `groupName` with your own group name. See [charts/cert-manager-webhook-infoblox-wapi/values.yaml](./charts/cert-manager-webhook-infoblox-wapi/values.yaml) for an in-depth explanation and other values that might require tweaking. With either method below, follow [helm instructions](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) to customize your deployment.
 
-Docker images are stored in GitHub's [ghcr.io](ghcr.io) registry, specifically at [ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi](ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi).
+Docker images are stored in GitHub's [ghcr.io](https://ghcr.io) registry, specifically at [ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi](https://ghcr.io/sarg3nt/cert-manager-webhook-infoblox-wapi).
 
 #### Using the Public Helm Chart
 
@@ -395,7 +397,66 @@ TEST_ZONE_NAME=example.com. make test
 
 ## Contributions
 
-If you would like to contribute to this project, please, open a PR via GitHub. Thanks.
+We welcome contributions to this project! Please follow these guidelines:
+
+### Commit Message Convention
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automated semantic versioning and changelog generation. All commits should follow this format:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Commit Types:**
+- `feat:` - A new feature (triggers **minor** version bump)
+- `fix:` - A bug fix (triggers **patch** version bump)
+- `docs:` - Documentation only changes
+- `style:` - Code style changes (formatting, missing semi-colons, etc.)
+- `refactor:` - Code changes that neither fix a bug nor add a feature
+- `perf:` - Performance improvements
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks, dependency updates
+- `ci:` - CI/CD configuration changes
+- `build:` - Build system or external dependency changes
+- `revert:` - Reverting a previous commit
+
+**Breaking Changes:**
+- Add `!` after the type (e.g., `feat!:`) or include `BREAKING CHANGE:` in the footer to trigger a **major** version bump
+
+**Examples:**
+```bash
+feat: add support for custom DNS zones
+fix: resolve timeout issue in webhook validation
+docs: improve installation instructions
+chore: update Go dependencies to 1.25.5
+feat!: change API endpoint structure
+fix(helm): correct service port configuration
+```
+
+### Release Process
+
+This project uses [Release Please](https://github.com/googleapis/release-please) for automated releases:
+
+1. When commits are pushed to `main`, Release Please analyzes commit messages
+2. It creates/updates a "Release PR" with the changelog and version bump
+3. When the Release PR is merged, it automatically:
+   - Creates a GitHub release with the changelog
+   - Creates a git tag
+   - Triggers the Docker image build and push
+   - Updates the Helm chart version
+
+### Pull Request Guidelines
+
+- PR titles should also follow the Conventional Commits format
+- Keep changes focused and atomic
+- Update documentation as needed
+- Ensure all CI checks pass
+
+For more details, see [.github/commit-instructions.md](.github/commit-instructions.md).
 
 ## License
 

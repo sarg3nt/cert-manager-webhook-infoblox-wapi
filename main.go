@@ -1,14 +1,19 @@
+// Package main implements a cert-manager ACME DNS01 webhook for Infoblox WAPI.
+// This webhook allows cert-manager to use Infoblox DNS for ACME DNS01 challenges.
+//
+// Based on the webhook example: https://github.com/cert-manager/webhook-example
 package main
 
 // cspell:ignore cmapi cmacme klog
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
@@ -23,9 +28,12 @@ import (
 	"k8s.io/klog/v2"
 )
 
-const SecretPath = "/etc/secrets/creds.json"
+// SecretPath is the file path where credentials are mounted, not actual credentials.
+const SecretPath = "/etc/secrets/creds.json" //nolint:gosec // G101: This is a file path, not hardcoded credentials
 
 // var _ webhook.Solver = (*customDNSProviderSolver)(nil)
+
+// GroupName is the API group name for the webhook, set via GROUP_NAME environment variable.
 var GroupName = os.Getenv("GROUP_NAME")
 
 func main() {
@@ -57,7 +65,7 @@ type customDNSProviderSolver struct {
 	// 3. uncomment the relevant code in the Initialize method below
 	// 4. ensure your webhook's service account has the required RBAC role
 	//    assigned to it for interacting with the Kubernetes APIs you need.
-	client *kubernetes.Clientset
+	client kubernetes.Interface
 }
 
 // customDNSProviderConfig is a structure that is used to decode into when
@@ -81,17 +89,17 @@ type customDNSProviderConfig struct {
 	// `issuer.spec.acme.dns01.providers.webhook.config` field.
 
 	Host                string                   `json:"host"`
-	Port                string                   `json:"port"                default:"443"`
-	Version             string                   `json:"version"             default:"2.10"`
+	Port                string                   `json:"port"`
+	Version             string                   `json:"version"`
 	UsernameSecretRef   cmmeta.SecretKeySelector `json:"usernameSecretRef"`
 	PasswordSecretRef   cmmeta.SecretKeySelector `json:"passwordSecretRef"`
 	View                string                   `json:"view"`
-	SslVerify           bool                     `json:"sslVerify"           default:"false"`
-	HttpRequestTimeout  int                      `json:"httpRequestTimeout"  default:"60"`
-	HttpPoolConnections int                      `json:"httpPoolConnections" default:"10"`
-	GetUserFromVolume   bool                     `json:"getUserFromVolume"   default:"false"`
-	TTL                 uint32                   `json:"ttl"                 default:"90"`
-	UseTtl              bool                     `json:"useTtl"              default:"true"`
+	SslVerify           bool                     `json:"sslVerify"`
+	HTTPRequestTimeout  int                      `json:"httpRequestTimeout"`
+	HTTPPoolConnections int                      `json:"httpPoolConnections"`
+	GetUserFromVolume   bool                     `json:"getUserFromVolume"`
+	TTL                 uint32                   `json:"ttl"`
+	UseTTL              bool                     `json:"useTtl"`
 }
 
 type usernamePassword struct {
@@ -142,20 +150,29 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 		return err
 	}
 
-	if recordRef == "" {
-		klog.InfoS("CMI: Creating new TXT record as one was not found", "name", recordName)
-		recordRef, err := c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.TTL, cfg.UseTtl)
-		klog.InfoS("CMI: Record ref after creating new txt record: ", "recordRef", recordRef)
-
+	// If record exists, delete it first to ensure we create with correct value
+	// This ensures idempotent behavior as required by cert-manager
+	if recordRef != "" {
+		klog.InfoS("CMI: TXT record already exists, deleting before recreating", "name", recordName, "ref", recordRef)
+		err = c.DeleteTXTRecord(ib, recordRef)
 		if err != nil {
-			klog.InfoS("CMI: Error creating TXT record", "name", recordName, "error", err.Error())
+			klog.InfoS("CMI: Error deleting existing TXT record", "name", recordName, "error", err.Error())
 			return err
 		}
-
-		klog.InfoS("CMI: Created new TXT record", "name", recordName, "ref", recordRef)
-	} else {
-		klog.InfoS("CMI: TXT record already present, deleting.", "name", recordName, "ref", recordRef)
+		klog.InfoS("CMI: Deleted existing TXT record", "name", recordName, "ref", recordRef)
 	}
+
+	// Create the TXT record
+	klog.InfoS("CMI: Creating TXT record", "name", recordName)
+	recordRef, err = c.CreateTXTRecord(ib, recordName, ch.Key, cfg.View, cfg.TTL, cfg.UseTTL)
+	klog.InfoS("CMI: Record ref after creating txt record", "recordRef", recordRef)
+
+	if err != nil {
+		klog.InfoS("CMI: Error creating TXT record", "name", recordName, "error", err.Error())
+		return err
+	}
+
+	klog.InfoS("CMI: Successfully created TXT record", "name", recordName, "ref", recordRef)
 
 	klog.InfoS("CMI: Done presenting for DNS record", "DNS", ch.DNSName)
 	return nil
@@ -211,7 +228,7 @@ func (c *customDNSProviderSolver) CleanUp(ch *whapi.ChallengeRequest) error {
 // provider accounts.
 // The stopCh can be used to handle early termination of the webhook, in cases
 // where a SIGTERM or similar signal is sent to the webhook process.
-func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
+func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, _ <-chan struct{}) error {
 	klog.InfoS("CMI: Initializing k8s client")
 	cl, err := kubernetes.NewForConfig(kubeClientConfig)
 	if err != nil {
@@ -235,10 +252,36 @@ func loadConfig(cfgJSON *apiextensionsv1.JSON) (customDNSProviderConfig, error) 
 		return cfg, nil
 	}
 	if err := json.Unmarshal(cfgJSON.Raw, &cfg); err != nil {
-		return cfg, fmt.Errorf("CMI: Error decoding solver config: %v", err)
+		return cfg, fmt.Errorf("CMI: Error decoding solver config: %w", err)
 	}
 
+	// Apply default values for fields that weren't set
+	applyDefaults(&cfg)
+
 	return cfg, nil
+}
+
+// applyDefaults sets default values for configuration fields that are zero/empty.
+// This follows Go best practice of explicit default handling.
+func applyDefaults(cfg *customDNSProviderConfig) {
+	if cfg.Port == "" {
+		cfg.Port = "443"
+	}
+	if cfg.Version == "" {
+		cfg.Version = "2.10"
+	}
+	if cfg.HTTPRequestTimeout <= 0 {
+		cfg.HTTPRequestTimeout = 60
+	}
+	if cfg.HTTPPoolConnections <= 0 {
+		cfg.HTTPPoolConnections = 10
+	}
+	if cfg.TTL == 0 {
+		cfg.TTL = 300
+	}
+	// UseTTL defaults to true if not explicitly set
+	// Note: this can't distinguish between false and unset with bool type
+	// For now, we'll assume it should default to true in getIbClient if needed
 }
 
 // Initialize and return infoblox client connector
@@ -293,29 +336,6 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 		return nil, fmt.Errorf("CMI: No secretRefs or secretPath provided")
 	}
 
-	// Set default values if needed
-	_t := reflect.TypeOf(customDNSProviderConfig{})
-	if cfg.Port == "" {
-		_f, _ := _t.FieldByName("Port")
-		cfg.Port = _f.Tag.Get("default")
-	}
-	if cfg.Version == "" {
-		_f, _ := _t.FieldByName("Version")
-		cfg.Version = _f.Tag.Get("default")
-	}
-	if cfg.HttpRequestTimeout <= 0 {
-		_f, _ := _t.FieldByName("HttpRequestTimeout")
-		if i, err := strconv.Atoi(_f.Tag.Get("default")); err == nil {
-			cfg.HttpRequestTimeout = i
-		}
-	}
-	if cfg.HttpPoolConnections <= 0 {
-		_f, _ := _t.FieldByName("HttpPoolConnections")
-		if i, err := strconv.Atoi(_f.Tag.Get("default")); err == nil {
-			cfg.HttpPoolConnections = i
-		}
-	}
-
 	// Initialize ibclient
 	hostConfig := ibclient.HostConfig{
 		Host:    cfg.Host,
@@ -329,7 +349,7 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 		Password: password,
 	}
 
-	transportConfig := ibclient.NewTransportConfig(strconv.FormatBool(cfg.SslVerify), cfg.HttpRequestTimeout, cfg.HttpPoolConnections)
+	transportConfig := ibclient.NewTransportConfig(strconv.FormatBool(cfg.SslVerify), cfg.HTTPRequestTimeout, cfg.HTTPPoolConnections)
 	requestBuilder := &ibclient.WapiRequestBuilder{}
 	requestor := &ibclient.WapiHttpRequestor{}
 
@@ -344,15 +364,18 @@ func (c *customDNSProviderSolver) getIbClient(cfg *customDNSProviderConfig, name
 
 // Resolve the value of a secret given a SecretKeySelector with name and key parameters
 func (c *customDNSProviderSolver) getSecret(sel cmmeta.SecretKeySelector, namespace string) (string, error) {
-	klog.InfoS("CMI: Getting secret")
-	secret, err := c.client.CoreV1().Secrets(namespace).Get(context.Background(), sel.Name, metav1.GetOptions{})
+	klog.InfoS("CMI: Getting secret", "name", sel.Name, "namespace", namespace)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	secret, err := c.client.CoreV1().Secrets(namespace).Get(ctx, sel.Name, metav1.GetOptions{})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get secret %s/%s: %w", namespace, sel.Name, err)
 	}
 
 	secretData, ok := secret.Data[sel.Key]
 	if !ok {
-		return "", err
+		return "", fmt.Errorf("key %s not found in secret %s/%s", sel.Key, namespace, sel.Name)
 	}
 
 	return strings.TrimSuffix(string(secretData), "\n"), nil
@@ -373,21 +396,28 @@ func (c *customDNSProviderSolver) GetTXTRecord(ib ibclient.IBConnector, name str
 
 	if len(records) > 0 {
 		klog.InfoS("CMI: Found TXT record")
-		return records[0].Ref, err
-	} else {
-		if _, ok := err.(*ibclient.NotFoundError); ok {
-			klog.InfoS("CMI: No TXT record found.  This can be normal for the first run.")
-			return "", nil
-		}
+		return records[0].Ref, nil
+	}
+
+	// No records found - check if it's a NotFoundError (expected) or real error
+	var notFoundErr *ibclient.NotFoundError
+	if errors.As(err, &notFoundErr) {
+		klog.InfoS("CMI: No TXT record found. This can be normal for the first run.")
+		return "", nil
+	}
+
+	if err != nil {
 		return "", err
 	}
+
+	return "", nil
 }
 
 // Create a TXT record in Infoblox
-func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string, ttl uint32, useTtl bool) (string, error) {
+func (c *customDNSProviderSolver) CreateTXTRecord(ib ibclient.IBConnector, name string, text string, view string, ttl uint32, useTTL bool) (string, error) {
 	klog.InfoS("CMI: Creating TXT record", "name", name)
 
-	recordTXT := ibclient.NewRecordTXT(view, "", name, text, ttl, useTtl, "", nil)
+	recordTXT := ibclient.NewRecordTXT(view, "", name, text, ttl, useTTL, "", nil)
 	klog.InfoS("CMI: RecordTXT", "recordTXT", recordTXT)
 	return ib.CreateObject(recordTXT)
 }
@@ -400,10 +430,8 @@ func (c *customDNSProviderSolver) DeleteTXTRecord(ib ibclient.IBConnector, ref s
 	return err
 }
 
-// Remove trailing dot
-func (c *customDNSProviderSolver) DeDot(string string) string {
+// DeDot removes the trailing dot from a fully qualified domain name.
+func (c *customDNSProviderSolver) DeDot(fqdn string) string {
 	klog.InfoS("CMI: Removing trailing dot")
-	result := strings.TrimSuffix(string, ".")
-
-	return result
+	return strings.TrimSuffix(fqdn, ".")
 }
