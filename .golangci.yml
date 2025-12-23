@@ -1,8 +1,6 @@
 # golangci-lint configuration for cert-manager-webhook-infoblox-wapi
 # See https://golangci-lint.run/usage/configuration/
 
-version: 2
-
 run:
   timeout: 5m
   modules-download-mode: readonly
@@ -25,9 +23,6 @@ linters:
     - gocyclo
     - goprintffuncname
     - unconvert
-
-formatters:
-  enable:
     - gofmt
     - goimports
 
@@ -64,4 +59,5 @@ issues:
   max-same-issues: 0
 
 output:
-  format: colored-line-number
+  formats:
+    - format: colored-line-number
