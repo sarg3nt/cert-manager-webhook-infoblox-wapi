@@ -69,12 +69,12 @@
       ],
       "extra-files": [
         {
-          "type": "json",
+          "type": "yaml",
           "path": "charts/cert-manager-webhook-infoblox-wapi/Chart.yaml",
           "jsonpath": "$.version"
         },
         {
-          "type": "json",
+          "type": "yaml",
           "path": "charts/cert-manager-webhook-infoblox-wapi/Chart.yaml",
           "jsonpath": "$.appVersion"
         }
