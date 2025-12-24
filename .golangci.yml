@@ -32,6 +32,7 @@ linters:
       enable-all: true
       disable:
         - shadow
+        - fieldalignment
     gosec:
       excludes:
         - G404
