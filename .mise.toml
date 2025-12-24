@@ -6,7 +6,7 @@
 
 [tools]
 # specify single or multiple versions of specific tools you want installed for this project.
-golang = '1.24.2'
-#golangci-lint = '1.61.0'
+golang = '1.25.5'
+#golangci-lint = '2.7.2'
 #goreleaser = "2.3.2"
 kubectl = "1.30"

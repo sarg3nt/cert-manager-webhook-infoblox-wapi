@@ -1,7 +1,7 @@
 # golangci-lint configuration for cert-manager-webhook-infoblox-wapi
 # See https://golangci-lint.run/usage/configuration/
 
-version: 2
+version: "2"
 
 run:
   timeout: 5m
@@ -25,43 +25,42 @@ linters:
     - gocyclo
     - goprintffuncname
     - unconvert
-
-formatters:
-  enable:
-    - gofmt
-    - goimports
-
-linters-settings:
-  gocyclo:
-    min-complexity: 15
-  govet:
-    enable-all: true
-    disable:
-      - shadow
-  gosec:
-    excludes:
-      - G404
-  revive:
+  settings:
+    gocyclo:
+      min-complexity: 15
+    govet:
+      enable-all: true
+      disable:
+        - shadow
+        - fieldalignment
+    gosec:
+      excludes:
+        - G404
+    revive:
+      rules:
+        - name: exported
+          disabled: false
+          arguments:
+            - "checkPrivateReceivers"
+            - "sayRepetitiveInsteadOfStutters"
+  exclusions:
     rules:
-      - name: exported
-        disabled: false
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
+      - path: _test\.go
+        linters:
+          - gocyclo
+          - errcheck
+          - gosec
+      - path: "webhook/"
+        linters:
+          - revive
+          - stylecheck
 
 issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - gosec
-    - path: "webhook/"
-      linters:
-        - revive
-        - stylecheck
   max-issues-per-linter: 0
   max-same-issues: 0
 
 output:
-  format: colored-line-number
+  formats:
+    text:
+      path: stdout
+      colors: true

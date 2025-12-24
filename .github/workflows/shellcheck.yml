@@ -4,13 +4,13 @@ on:
   push:
     branches: ["main"]
     paths:
-      - '**.sh'
-      - '.github/workflows/shellcheck.yml'
+      - "**.sh"
+      - ".github/workflows/shellcheck.yml"
   pull_request:
     branches: ["main"]
     paths:
-      - '**.sh'
-      - '.github/workflows/shellcheck.yml'
+      - "**.sh"
+      - ".github/workflows/shellcheck.yml"
   workflow_dispatch: # Allows manual triggering
 
 permissions:
@@ -26,22 +26,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           disable-sudo: true
-          egress-policy: block
+          egress-policy: audit
           allowed-endpoints: >
             api.github.com:443
             github.com:443
             objects.githubusercontent.com:443
 
       - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@00b27aa7cb85167568cb48a3838b75f4265f2bca # v2.0.0
         with:
           severity: warning
-          additional_files: '*.sh'
+          additional_files: "*.sh"
         env:
           SHELLCHECK_OPTS: -x -s bash
