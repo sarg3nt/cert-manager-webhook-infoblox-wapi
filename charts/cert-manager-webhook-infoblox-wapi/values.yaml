@@ -35,6 +35,38 @@ fullnameOverride: ""
 # Annotations to add to the pod
 podAnnotations: {}
 
+# Pod-level security context.
+# On OpenShift, the platform assigns a random UID from the namespace's UID range, so you
+# should remove runAsUser/runAsGroup/fsGroup (or set them to null) and omit seccompProfile.
+# Example for OpenShift (minimal, lets OpenShift assign UID):
+#   podSecurityContext:
+#     runAsNonRoot: true
+#     runAsUser: null
+#     runAsGroup: null
+#     fsGroup: null
+#     seccompProfile: null
+# To disable the pod security context entirely, set it to null:
+#   podSecurityContext: null
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  fsGroup: 65534
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container-level security context.
+# The default settings are compatible with OpenShift's built-in restricted-v2 SCC
+# and do not normally need to be changed.
+# To disable the container security context entirely, set it to null:
+#   containerSecurityContext: null
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
 # Used if loading the secret from a file on disk.
 secretVolume:
   hostPath: ""
