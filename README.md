@@ -29,6 +29,7 @@ https://github.com/cert-manager/webhook-example.
     - [Using the Public Helm Chart](#using-the-public-helm-chart)
     - [From Source](#from-source)
     - [Values](#values)
+  - [OpenShift](#openshift)
   - [Infoblox User Account](#infoblox-user-account)
     - [Kubernetes Secret](#kubernetes-secret)
     - [Hostpath Volume Mount](#hostpath-volume-mount)
@@ -110,10 +111,43 @@ helm -n cert-manager install webhook-infoblox-wapi deploy/cert-manager-webhook-i
 | secretVolume.hostPath          | Location of a secrets file on the host file system to use instead of a Kubernetes secret                                                                                                                                                                                                                                                                                          | /etc/secrets/secrets.json                          |
 | service.type                   | Service type to expose                                                                                                                                                                                                                                                                                                                                                            | ClusterIP                                          |
 | service.port                   | Service port to expose                                                                                                                                                                                                                                                                                                                                                            | 443                                                |
+| podAnnotations                 | Annotations to add to the pod                                                                                                                                                                                                                                                                                                                                                     | {}                                                 |
+| podSecurityContext             | Pod-level security context. Override or set to `{}` to disable (e.g. for OpenShift). See [OpenShift](#openshift).                                                                                                                                                                                                                                                                | see values.yaml                                    |
+| containerSecurityContext       | Container-level security context. Override or set to `{}` to disable.                                                                                                                                                                                                                                                                                                            | see values.yaml                                    |
 | resources                      | Deployment resource limits                                                                                                                                                                                                                                                                                                                                                        | {}                                                 |
 | nodeSelector                   | Deployment node selector object                                                                                                                                                                                                                                                                                                                                                   | {}                                                 |
 | tolerations                    | Deployment tolerations                                                                                                                                                                                                                                                                                                                                                            | []                                                 |
 | affinity                       | Deployment affinity                                                                                                                                                                                                                                                                                                                                                               | {}                                                 |
+
+### OpenShift
+
+On OpenShift, pod UIDs are automatically assigned from the namespace's UID range, so the hardcoded `runAsUser`, `runAsGroup`, and `fsGroup` values in the default `podSecurityContext` will conflict with the namespace's Security Context Constraints (SCC). Additionally, `seccompProfile` may not be supported depending on the SCC in use.
+
+To deploy on OpenShift, override `podSecurityContext` in your values file to null out the fields that OpenShift manages:
+
+```yaml
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: null
+  runAsGroup: null
+  fsGroup: null
+  seccompProfile: null
+```
+
+If you prefer to disable the pod-level security context entirely and rely solely on the SCC:
+
+```yaml
+podSecurityContext: null
+```
+
+> [!NOTE]
+> Setting `podSecurityContext: {}` (empty map) will not disable the security context — Helm merges empty maps with the chart defaults, leaving all fields in place. You must use `null` to remove individual fields or the whole object.
+
+The default `containerSecurityContext` (`allowPrivilegeEscalation: false`, `readOnlyRootFilesystem: true`, `capabilities.drop: [ALL]`) is compatible with OpenShift's built-in `restricted-v2` SCC and does not normally need to be changed. If you are using a more permissive SCC and prefer no container-level restrictions, set:
+
+```yaml
+containerSecurityContext: null
+```
 
 ### Infoblox User Account
 
