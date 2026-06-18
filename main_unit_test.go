@@ -232,7 +232,7 @@ func TestGetSecret(t *testing.T) {
 		},
 	}
 
-	fakeClient := fake.NewSimpleClientset(secret)
+	fakeClient := fake.NewClientset(secret)
 	solver := &customDNSProviderSolver{client: fakeClient}
 
 	tests := []struct {
@@ -322,7 +322,7 @@ func TestGetIbClient_WithSecretRefs(t *testing.T) {
 		},
 	}
 
-	fakeClient := fake.NewSimpleClientset(secret)
+	fakeClient := fake.NewClientset(secret)
 	solver := &customDNSProviderSolver{client: fakeClient}
 
 	cfg := customDNSProviderConfig{
@@ -417,7 +417,7 @@ func TestGetIbClient_WithDefaultsFromLoadConfig(t *testing.T) {
 		},
 	}
 
-	fakeClient := fake.NewSimpleClientset(secret)
+	fakeClient := fake.NewClientset(secret)
 	solver := &customDNSProviderSolver{client: fakeClient}
 
 	// Simulate config loaded through loadConfig (which applies defaults)
