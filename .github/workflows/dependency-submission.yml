@@ -1,0 +1,64 @@
+# Go Dependency Submission
+#
+# GitHub only auto-generates a dependency-graph snapshot for the default
+# branch, so PRs that change go.mod have no snapshot for their head commit.
+# The Dependency Review workflow then fails with "No snapshots were found
+# for the head SHA". This workflow submits the Go module dependency graph
+# for the PR head commit so Dependency Review has a snapshot to compare
+# against.
+#
+# Runs on the standard `pull_request` event (unprivileged, same trust level
+# as the CI Test job, which already runs PR Go code). For same-repo branches
+# (e.g. Dependabot) the GITHUB_TOKEN has the contents:write permission needed
+# to submit the snapshot; fork PRs get a read-only token and the submission
+# is skipped by the action.
+name: Dependency Submission
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: # Allows manual triggering
+
+permissions:
+  contents: write # Required to submit the dependency snapshot
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.26.4" # Keep in sync with go.mod
+
+jobs:
+  go-dependency-submission:
+    name: Go Dependency Submission
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            objects.githubusercontent.com:443
+            proxy.golang.org:443
+            raw.githubusercontent.com:443
+            release-assets.githubusercontent.com:443
+            storage.googleapis.com:443
+            sum.golang.org:443
+
+      - name: Checkout Repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set Up Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Submit Go Dependencies
+        uses: actions/go-dependency-submission@f35d5c9af13ce9cc32f7930b171e315e878f6921 # v2.0.3
+        with:
+          go-mod-path: go.mod
