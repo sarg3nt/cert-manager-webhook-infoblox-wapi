@@ -1,35 +1,62 @@
 # See GitHub's documentation for more information on this file:
 # https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
+#
+# All ecosystems are checked monthly on the first Monday and every update is
+# bundled into a single grouped PR per ecosystem (go modules, GitHub Actions,
+# Docker). This keeps dependency churn to at most three PRs per month instead of
+# a stream of individual PRs. Conventional-commit prefixes (chore(deps)) are
+# required so release-please correctly classifies the changes.
 version: 2
 updates:
-  # Go module dependencies - checked monthly on the first Monday
+  # Go module dependencies - one grouped PR on the first Monday each month.
   - package-ecosystem: gomod
     directory: /
     schedule:
       interval: monthly
       day: monday
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+      - go
+    open-pull-requests-limit: 5
     groups:
       go-dependencies:
         patterns:
           - "*"
 
-  # GitHub Actions - checked monthly on the first Monday, all bundled into one PR
+  # GitHub Actions - one grouped PR on the first Monday each month.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
       day: monday
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+      - github_actions
+    open-pull-requests-limit: 5
     groups:
       github-actions:
         patterns:
           - "*"
 
-  # Docker dependencies - checked monthly on the first Monday
+  # Docker dependencies - one grouped PR on the first Monday each month.
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: monthly
       day: monday
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+      - docker
+    open-pull-requests-limit: 5
     groups:
       docker-dependencies:
         patterns:

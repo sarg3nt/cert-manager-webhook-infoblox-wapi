@@ -150,16 +150,20 @@ func (c *customDNSProviderSolver) Present(ch *whapi.ChallengeRequest) error {
 		return err
 	}
 
-	// If record exists, delete it first to ensure we create with correct value
-	// This ensures idempotent behavior as required by cert-manager
+	// GetTXTRecord filters by both name AND text (ch.Key), so a non-empty
+	// recordRef means a TXT record with this exact name and value already
+	// exists. cert-manager calls Present repeatedly while a challenge is
+	// pending, so treat that as success and return immediately. Deleting and
+	// recreating an identical record is not only pointless, it briefly removes
+	// the TXT value on every reconcile. When an apex domain and its wildcard are
+	// validated together (e.g. example.com + *.example.com), both challenges
+	// publish different values at the SAME _acme-challenge.example.com name; the
+	// delete-before-recreate window can hide a sibling value from cert-manager's
+	// self-check or Let's Encrypt's validation, causing intermittent failures.
 	if recordRef != "" {
-		klog.InfoS("CMI: TXT record already exists, deleting before recreating", "name", recordName, "ref", recordRef)
-		err = c.DeleteTXTRecord(ib, recordRef)
-		if err != nil {
-			klog.InfoS("CMI: Error deleting existing TXT record", "name", recordName, "error", err.Error())
-			return err
-		}
-		klog.InfoS("CMI: Deleted existing TXT record", "name", recordName, "ref", recordRef)
+		klog.InfoS("CMI: TXT record already exists with the correct value, nothing to do", "name", recordName, "ref", recordRef)
+		klog.InfoS("CMI: Done presenting for DNS record", "DNS", ch.DNSName)
+		return nil
 	}
 
 	// Create the TXT record
