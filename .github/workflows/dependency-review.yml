@@ -30,12 +30,10 @@ jobs:
           disable-sudo: true
           egress-policy: block
           allowed-endpoints: >
+            api.deps.dev:443
             api.github.com:443
             api.securityscorecards.dev:443
             github.com:443
-            objects.githubusercontent.com:443
-            raw.githubusercontent.com:443
-            release-assets.githubusercontent.com:443
 
       - name: 'Checkout Repository'
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
