@@ -39,3 +39,10 @@ jobs:
 
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          # GitHub generates the dependency-graph snapshot for a PR head SHA
+          # asynchronously, so on PRs that change go.mod the action can run
+          # before the snapshot exists and fail with "No snapshots were found
+          # for the head SHA". Wait and retry until the snapshot is available.
+          retry-on-snapshot-warnings: true
+          retry-on-snapshot-warnings-timeout: 300
