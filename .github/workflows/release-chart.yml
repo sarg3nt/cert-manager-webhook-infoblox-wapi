@@ -1,11 +1,17 @@
-name: Deploy Chart on PR Close
+name: Release Chart
 
+# Publishes the Helm chart to the gh-pages branch using the canonical
+# chart-releaser pattern: run on every push to main that changes charts/**.
+# chart-releaser diffs each chart's version against existing GitHub releases and
+# only publishes versions that don't yet have a release, so this is naturally
+# idempotent. This replaces the previous `pull_request: closed` trigger, which
+# fired on ANY PR close -- merged or not -- and published charts from unmerged
+# branches (it once shipped a broken 3.0.1 chart from a closed release PR).
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches: ["main"]
     paths:
-      - 'charts/**'
+      - "charts/**"
   workflow_dispatch: # Allows manual triggering
 
 permissions:
@@ -16,8 +22,8 @@ concurrency:
   cancel-in-progress: false # Don't cancel chart deployments
 
 jobs:
-  on_chart_pr_close:
-    name: Deploy Chart on PR Close
+  release-chart:
+    name: Release Chart
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -46,10 +52,13 @@ jobs:
       env:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-    # This will release the chart to the gh-pages branch
+    # This will release the chart to the gh-pages branch. `skip_existing` makes
+    # re-runs safe: if a chart's release/tag already exists it is skipped instead
+    # of failing the job.
     - name: Run Chart-Releaser
       uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
       with: 
         mark_as_latest: false
+        skip_existing: true
       env:
         CR_TOKEN: "${{ secrets.USER_PAT }}"

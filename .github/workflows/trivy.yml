@@ -33,12 +33,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Docker Image
+  trivy-scan:
+    name: Trivy Scan
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
@@ -52,59 +52,24 @@ jobs:
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
-      - name: Log Into Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
+      # Build the image into the local Docker daemon (load: true, push: false).
+      # Nothing is pushed to ghcr -- this avoids polluting the shared package
+      # with throwaway test-<run_id> tags on every push/PR. Trivy scans the
+      # locally loaded image directly.
+      - name: Build Docker Image
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:test-${{ github.run_id }}
+          push: false
+          load: true
+          tags: ghcr.io/${{ github.repository }}:trivy-scan
           cache-from: type=gha
           cache-to: type=gha,mode=max
-    outputs:
-      image-tag: test-${{ github.run_id }}
-
-  trivy-scan:
-    name: Trivy Scan
-    needs: build
-    permissions:
-      contents: write # for actions/checkout to fetch code and for SBOM to push results
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      packages: read
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
-        with:
-          disable-sudo: true
-          egress-policy: audit
-
-      - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Log Into Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull Docker Image
-        env:
-          IMAGE_TAG: ${{ needs.build.outputs.image-tag }}
-        run: |
-          docker pull ghcr.io/${{ github.repository }}:${IMAGE_TAG}
 
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: "ghcr.io/${{ github.repository }}:${{ needs.build.outputs.image-tag }}"
+          image-ref: "ghcr.io/${{ github.repository }}:trivy-scan"
           format: "template"
           template: "@/contrib/sarif.tpl"
           output: "trivy-results.sarif"
