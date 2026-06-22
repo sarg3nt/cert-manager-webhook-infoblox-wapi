@@ -68,7 +68,10 @@
         }
       ],
       "extra-files": [
-        "charts/cert-manager-webhook-infoblox-wapi/Chart.yaml"
+        {
+          "type": "generic",
+          "path": "charts/cert-manager-webhook-infoblox-wapi/Chart.yaml"
+        }
       ]
     }
   }
