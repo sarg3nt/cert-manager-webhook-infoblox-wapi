@@ -37,6 +37,14 @@ jobs:
           # GITHUB_TOKEN doesn't trigger workflows to prevent infinite loops
           # A PAT with 'repo' scope is needed to trigger CI on release PRs
           token: ${{ secrets.GH_TOKEN }}
+          # Explicitly point at our dot-prefixed config/manifest files. The
+          # action's default config-file name is `release-please-config.json`
+          # (NO leading dot), so without this our `.release-please-config.json`
+          # was silently ignored -- the chart `extra-files` bump and custom
+          # changelog sections never applied. The default manifest-file name
+          # already has a leading dot, but we set it here for clarity.
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
           # Release type determines how versions are calculated
           # 'go' type works well for Go projects with go.mod
           release-type: go
