@@ -26,7 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
@@ -40,23 +39,27 @@ jobs:
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
-      - name: Log Into Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
+      # Build a single-arch image to a local OCI tarball and hand it to the test
+      # job as a workflow artifact. This keeps the image off the shared ghcr
+      # package (no throwaway test-<run_id> tags) while still letting the kind
+      # cluster load it via `kind load image-archive`.
+      - name: Build Docker Image
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:test-${{ github.run_id }}
+          push: false
+          tags: ghcr.io/${{ github.repository }}:ci-test
+          outputs: type=docker,dest=/tmp/webhook-image.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
-    outputs:
-      image-tag: test-${{ github.run_id }}
+
+      - name: Upload Image Artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webhook-image
+          path: /tmp/webhook-image.tar
+          retention-days: 1
+
 
   lint:
     name: Lint Helm Charts
@@ -101,7 +104,6 @@ jobs:
     needs: build
     permissions:
       contents: read
-      packages: read
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
@@ -122,21 +124,17 @@ jobs:
         with:
           cluster_name: kind
 
-      - name: Log Into Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+      - name: Download Image Artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: webhook-image
+          path: /tmp
 
-      - name: Pull and Load Docker Image
-        env:
-          IMAGE_TAG: ${{ needs.build.outputs.image-tag }}
+      - name: Load Docker Image Into Kind
         run: |
-          # Pull the image from the registry
-          docker pull ghcr.io/${{ github.repository }}:${IMAGE_TAG}
-          # Load it into Kind
-          kind load docker-image ghcr.io/${{ github.repository }}:${IMAGE_TAG} --name kind
+          # Load the OCI tarball built by the `build` job straight into Kind
+          # (no registry round-trip, so nothing is pushed to ghcr).
+          kind load image-archive /tmp/webhook-image.tar --name kind
 
       - name: Install cert-manager
         run: |
@@ -147,7 +145,7 @@ jobs:
 
       - name: Test Helm Chart Installation
         env:
-          IMAGE_TAG: ${{ needs.build.outputs.image-tag }}
+          IMAGE_TAG: ci-test
         run: |
           for chart in charts/*/; do
             chart_name=$(basename "$chart")

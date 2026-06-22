@@ -124,7 +124,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
@@ -138,20 +137,14 @@ jobs:
       - name: Set Up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
-      - name: Log Into Registry
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
+      # Validate that the image builds. The artifact is not needed by any other
+      # job, so it is not pushed -- this avoids polluting the shared ghcr package
+      # with a throwaway test-<run_id> tag on every CI run.
+      - name: Build Docker Image
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:test-${{ github.run_id }}
+          push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
-    outputs:
-      image-tag: test-${{ github.run_id }}
+
