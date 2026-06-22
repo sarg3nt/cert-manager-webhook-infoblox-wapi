@@ -1,5 +1,13 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [3.0.1](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.0...v3.0.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* point release-please at .release-please-config.json and publish chart 3.0.0 ([81bd68d](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/81bd68dae0fdc8d54192c76526c363ccb8af30b0))
+* read .release-please-config.json and publish chart 3.0.0 ([5d37cef](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/5d37cef5c7d155c3254aecf2c5e820e3c7655c77))
+
 ## [3.0.0](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v1.13.1...v3.0.0) (2026-06-22)
 
 
