@@ -19,9 +19,12 @@ jobs:
     name: Create Release PR
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-      version: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
+      # Manifest mode prefixes per-package outputs with the package path; the
+      # root package is `.`, hence the `.--` prefix. `releases_created` is the
+      # aggregate boolean across all packages.
+      release_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs['.--tag_name'] }}
+      version: ${{ steps.release.outputs['.--version'] }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
@@ -37,23 +40,25 @@ jobs:
           # GITHUB_TOKEN doesn't trigger workflows to prevent infinite loops
           # A PAT with 'repo' scope is needed to trigger CI on release PRs
           token: ${{ secrets.GH_TOKEN }}
-          # Explicitly point at our dot-prefixed config/manifest files. The
-          # action's default config-file name is `release-please-config.json`
-          # (NO leading dot), so without this our `.release-please-config.json`
-          # was silently ignored -- the chart `extra-files` bump and custom
-          # changelog sections never applied. The default manifest-file name
-          # already has a leading dot, but we set it here for clarity.
+          # Run in MANIFEST mode: drive everything from the config + manifest
+          # files. Two critical gotchas, both learned the hard way:
+          #  1. The action's default config-file name is `release-please-config.json`
+          #     (NO leading dot), so our dot-prefixed `.release-please-config.json`
+          #     must be named explicitly or it is silently ignored.
+          #  2. Passing `release-type` (or `package-name`) as an action INPUT
+          #     forces the legacy single-package mode and makes the action ignore
+          #     `config-file`/`manifest-file` entirely -- so the chart `extra-files`
+          #     bump and custom changelog sections never apply. The release type
+          #     lives in `.release-please-config.json` (`packages["."].release-type`)
+          #     instead, so it must NOT be set here.
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
-          # Release type determines how versions are calculated
-          # 'go' type works well for Go projects with go.mod
-          release-type: go
 
       - name: Log Release Info
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.releases_created }}
         run: |
-          echo "Release created: ${{ steps.release.outputs.tag_name }}"
-          echo "Version: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}"
+          echo "Release created: ${{ steps.release.outputs['.--tag_name'] }}"
+          echo "Version: ${{ steps.release.outputs['.--version'] }}"
           echo "Release PR: ${{ steps.release.outputs.pr }}"
 
   # Note: Your existing release.yml workflow will automatically trigger
