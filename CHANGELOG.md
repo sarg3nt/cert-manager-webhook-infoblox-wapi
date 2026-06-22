@@ -1,5 +1,17 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [3.0.1](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.0...v3.0.1) (2026-06-22)
+
+
+### 🐛 Bug Fixes
+
+* force generic updater for Chart.yaml so appVersion bumps and annotations persist ([a6c0513](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/a6c051374c56e4b4bb76cf00de278e15232bbf09))
+* force generic updater for Chart.yaml so appVersion bumps and annotations persist ([d5dc4ec](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/d5dc4ecb4253b98c7873cf79e6380ef81f7197f2))
+* point release-please at .release-please-config.json and publish chart 3.0.0 ([81bd68d](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/81bd68dae0fdc8d54192c76526c363ccb8af30b0))
+* read .release-please-config.json and publish chart 3.0.0 ([5d37cef](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/5d37cef5c7d155c3254aecf2c5e820e3c7655c77))
+* run release-please in manifest mode so chart bumps apply ([e29dd71](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/e29dd71530fddd9978cff68916aa607cc13a3e4c))
+* run release-please in manifest mode so chart bumps apply ([0675278](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/06752784e233f31a4e80e82cbaf76df7f03cdf19))
+
 ## [3.0.0](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v1.13.1...v3.0.0) (2026-06-22)
 
 
