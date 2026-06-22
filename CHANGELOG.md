@@ -1,5 +1,20 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [1.13.1](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v1.13.0...v1.13.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* **ci:** allow api.deps.dev egress and submit base-branch snapshot ([889273b](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/889273b663668f77be18439bf425c79e0c858199))
+* **ci:** allow githubusercontent egress in Dependency Review job ([de6df83](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/de6df83eaac9ebe6e47848247ea2b8e3f5def9ec))
+* **ci:** allow release-assets.githubusercontent.com egress in Test job ([0e05594](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/0e05594a9d18f5a30829e2c068c6c2c0e5ebe167))
+* **ci:** retry dependency-review on missing snapshot warnings ([68d5495](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/68d5495a76c720fd9d15d4516d61fbf1b9d60182))
+* **ci:** submit Go dependency snapshot for PR head commit ([d35dd04](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/d35dd04b31e0ffbc3c4ac060fed1e188ca7d44aa))
+* **deps:** bump controller-runtime to v0.24.1 for k8s 0.36 compat ([8582b24](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8582b245bb9a18e16eb1f5be2bdd50587c5ebb81))
+* **deps:** bump controller-runtime to v0.24.1 for k8s 0.36 compatibility ([991d1b1](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/991d1b1978a0001edcb277f9479b3b3994af5206))
+* **dns:** prevent unnecessary deletion of existing TXT records ([0e6b67e](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/0e6b67ea7ee82e5f0d39e03c41f89eae8c22d119))
+* **dns:** prevent unnecessary deletion of existing TXT records ([6ce2c04](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/6ce2c048ebc25c077faba75ee30c3a3f94f9c21f))
+
 ## [1.13.0](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v1.12.0...v1.13.0) (2025-12-23)
 
 
