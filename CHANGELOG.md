@@ -1,5 +1,13 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [3.0.2](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.1...v3.0.2) (2026-06-22)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** consolidate release pipeline to remove duplicated mechanisms ([72f9f9e](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/72f9f9eb36c0023eb9b6f12d2b5904af732408fe))
+* **ci:** consolidate release pipeline to remove duplicated mechanisms ([ca2173b](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/ca2173b5d37dab08139bc19508d7303d548956cb))
+
 ## [3.0.1](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.0...v3.0.1) (2026-06-22)
 
 
