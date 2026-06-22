@@ -1,11 +1,8 @@
 apiVersion: v2
 name: cert-manager-webhook-infoblox-wapi
 type: application
-# version and appVersion are bumped automatically by Release Please via the
-# `x-release-please-version` annotations below -- keep them on the same value so
-# the chart, the app, and the published image all share one version.
-version: 3.0.0 # x-release-please-version
-appVersion: 3.0.0 # x-release-please-version
+version: 3.0.1
+appVersion: 3.0.0
 description: Cert-manager webhook for interacting with InfoBlox WAPI servers
 home: https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
 keywords:
