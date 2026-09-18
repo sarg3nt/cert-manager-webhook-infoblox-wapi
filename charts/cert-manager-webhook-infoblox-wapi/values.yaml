@@ -67,6 +67,11 @@ containerSecurityContext:
     drop:
       - ALL
 
+# extra command line flags to pass to the running command in the pod
+# extraArgs:
+#   - "--secure-port=8443"
+extraArgs: []
+
 # Used if loading the secret from a file on disk.
 secretVolume:
   hostPath: ""
