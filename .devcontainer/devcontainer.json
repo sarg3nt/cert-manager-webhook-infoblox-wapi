@@ -16,7 +16,12 @@
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh-localhost,type=bind",
     "source=${localEnv:HOME}/.config/k9s,target=/home/vscode/.config/k9s-localhost,type=bind",
     "source=${localEnv:HOME}/.local/share/k9s,target=/home/vscode/.local/share/k9s-localhost,type=bind",
-    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind",
+    // Claude Code state (login, settings, plugins, session history). A named volume shared by every dev container
+    // using this image, so one login survives rebuilds and carries across projects. See CLAUDE_CONFIG_DIR below.
+    "source=claude-code-config,target=/home/vscode/.claude,type=volume",
+    // Host ~/.claude, read-only. post_start_command.sh copies only CLAUDE.md (user-global instructions) from it.
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude-localhost,type=bind,readonly"
   ],
   "containerEnv": {
     ////////// Repo Specific Environment Variables //////////
@@ -29,7 +34,9 @@
     // Used to set the hosts project path for use in scripts running inside a docker container inside the dev container
     "HOST_PROJECT_PATH": "${localWorkspaceFolder}",
     "WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
-    "TZ": "America/Los_Angeles" // Set the timezone in the devcontainer
+    "TZ": "America/Los_Angeles", // Set the timezone in the devcontainer
+    // Keep all Claude Code state, including .claude.json, inside the persisted volume mounted above.
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
   },
   "image": "ghcr.io/sarg3nt/go-dev-container:latest",
   "initializeCommand": [
@@ -69,7 +76,7 @@
         "tim-koehler.helm-intellisense", // Helm
         "timonwong.shellcheck", //bash script linting
         "yzhang.markdown-all-in-one", // markdown preview and support
-        "Anthropic.claude-code"
+        "Anthropic.claude-code" // Claude Code
       ],
       "settings": {
         "dev.containers.dockerCredentialHelper": false,

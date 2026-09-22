@@ -75,6 +75,14 @@ create_required_folders() {
     directories_created=true
   fi
 
+  if [[ ! -d "${HOME}/.claude" ]]; then
+    echo "You did not have a .claude folder in your home directory, creating."
+    echo "Claude Code in the dev container will run without your user-global CLAUDE.md."
+    echo ""
+    mkdir -p "${HOME}/.claude"
+    directories_created=true
+  fi
+
   if [[ "$directories_created" = false ]]; then
     echo "All required directories already exist."
   fi

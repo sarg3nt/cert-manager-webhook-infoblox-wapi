@@ -12,6 +12,7 @@ main() {
   copy_kube_config
   copy_k9s_config
   copy_docker_config
+  setup_claude_code
 }
 
 #######################################
@@ -153,6 +154,44 @@ copy_docker_config() {
 
   else
     echo "  - No remote Docker config detected, using defaults."
+  fi
+  echo ""
+}
+
+#######################################
+# Set up Claude Code: fix ownership of the persisted config volume, copy in the host's user-global CLAUDE.md,
+# and install the claude CLI if it is not already present (the VS Code extension bundles its own copy, but the
+# terminal `claude` command needs the native install).
+# Globals:
+#   HOME
+#   CLAUDE_CONFIG_DIR
+# Arguments:
+#   None
+#######################################
+setup_claude_code() {
+  echo "************** Claude Code Setup ******************"
+  local config="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}"
+  local remote_config="${HOME}/.claude-localhost"
+
+  # A new named volume is created root-owned.
+  mkdir -p "${config}" >/dev/null 2>&1 || true
+  sudo chown "$(id -u):$(id -g)" "${config}"
+
+  if [[ -f "${remote_config}/CLAUDE.md" ]]; then
+    echo "  - Host CLAUDE.md detected, copying in."
+    cp "${remote_config}/CLAUDE.md" "${config}/CLAUDE.md"
+  else
+    echo "  - No host CLAUDE.md detected, skipping."
+  fi
+
+  if command -v claude >/dev/null 2>&1 || [[ -x "${HOME}/.local/bin/claude" ]]; then
+    echo "  - claude CLI already installed."
+  else
+    echo "  - Installing claude CLI."
+    if ! curl -fsSL https://claude.ai/install.sh | bash; then
+      echo "  - WARNING: claude CLI install failed. The VS Code extension still works; retry with:"
+      echo "      curl -fsSL https://claude.ai/install.sh | bash"
+    fi
   fi
   echo ""
 }

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(go build:*)",
+      "Bash(go test:*)",
+      "Bash(go vet:*)",
+      "Bash(go mod tidy)",
+      "Bash(go list:*)",
+      "Bash(golangci-lint run:*)",
+      "Bash(make help)",
+      "Bash(make build)",
+      "Bash(make test)",
+      "Bash(make test-race)",
+      "Bash(make test-coverage)",
+      "Bash(helm lint:*)",
+      "Bash(helm template:*)",
+      "Bash(shellcheck:*)",
+      "Bash(npx markdownlint-cli:*)"
+    ],
+    "deny": [
+      "Bash(make push-container:*)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
