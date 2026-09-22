@@ -1,5 +1,23 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [3.0.5](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.4...v3.0.5) (2026-09-22)
+
+
+### 🐛 Bug Fixes
+
+* **chart:** remove stray diff markers from values.yaml service comment ([1214245](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/1214245c147c46c9ca0077b08ea7ac6847701ac4))
+* **devcontainer:** macOS startup failures in dev.sh and initialize_command ([503d8f9](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/503d8f9331bb445a55239c454f5ebe85c1b35d71))
+* **devcontainer:** macOS startup failures in dev.sh and initialize_command ([0d80b14](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/0d80b140ff478b08fbb021a19a3a2a14459e3c18))
+* **release:** open PR to sync Release Please after monthly releases ([8c8c24c](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8c8c24c6e766385fbda5406482808f73d71f93bc))
+* **release:** sync Release Please with monthly releases ([772df8f](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/772df8f2d92a23d4e62a1f0c534146be4d72e9ed))
+* **release:** sync release-please manifest to v3.0.4 ([8b2645f](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/8b2645fac46c429688c7ba57dd23f61b41eeab2e))
+
+
+### 🧹 Maintenance
+
+* **deps:** consolidate open Dependabot Go module updates ([7f49dfe](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/7f49dfe99c35a8c2b2b90d5465ab389fc01277d7))
+* **deps:** consolidate open Dependabot Go module updates ([068c531](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/068c5313d641b892ae49d0622820f4e51005a282))
+
 ## [3.0.2](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.1...v3.0.2) (2026-06-22)
 
 
