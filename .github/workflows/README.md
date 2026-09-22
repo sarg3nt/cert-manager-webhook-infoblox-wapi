@@ -49,12 +49,11 @@ This directory contains all GitHub Actions workflows for the cert-manager-webhoo
 **Purpose:** Automated monthly releases for dependency updates  
 **Triggers:** Monthly cron (1st of month at 00:00 UTC), manual  
 **Jobs:**
-- **Release Build and Push:** Builds new image only if content differs from previous
-- **Helm Version Updater:** Updates charts if image was released
+- **Release Build and Push:** Builds new image only if content differs from previous; if released, tags the next patch version and opens a PR syncing `.release-please-manifest.json` and the chart `version`/`appVersion` to it, so Release Please doesn't propose an already-published version
 
 **Secrets Required:**
 - `GITHUB_TOKEN`
-- `USER_PAT`
+- `GH_TOKEN` (PAT, so the sync PR triggers CI)
 
 #### [deploy-chart-on-pr-close.yml](deploy-chart-on-pr-close.yml)
 **Purpose:** Deploy Helm charts to gh-pages after PR merge  
