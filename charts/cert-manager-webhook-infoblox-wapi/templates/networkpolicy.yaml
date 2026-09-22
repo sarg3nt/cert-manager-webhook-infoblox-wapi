@@ -28,7 +28,7 @@ spec:
               kubernetes.io/metadata.name: kube-system
       ports:
         - protocol: TCP
-          port: 443
+          port: {{ .Values.service.port }}
   egress:
     # Allow DNS resolution
     - to:

@@ -74,6 +74,10 @@ secretVolume:
 
 service:
   type: ClusterIP
+  # HTTPS port for the webhook. Used both for the Service port and for the
+  # container's listening port (passed to the webhook as --secure-port).
+  # On OpenShift the pod usually cannot bind privileged ports (< 1024),
+  # so set a port >= 1024 there (e.g. 8443).
   port: 443
   # Annotations to add to the service
   annotations: {}

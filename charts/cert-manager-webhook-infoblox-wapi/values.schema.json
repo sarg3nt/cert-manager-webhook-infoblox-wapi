@@ -171,7 +171,7 @@
         },
         "port": {
           "type": "integer",
-          "description": "Service port",
+          "description": "HTTPS port for the webhook. Used both for the Service port and for the container's listening port (passed as --secure-port). Use a port >= 1024 on OpenShift.",
           "minimum": 1,
           "maximum": 65535,
           "default": 443
