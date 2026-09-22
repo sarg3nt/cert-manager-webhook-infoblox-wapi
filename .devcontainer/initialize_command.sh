@@ -52,11 +52,18 @@ create_required_folders() {
     directories_created=true
   fi
 
+  # Both k9s paths are bind-mounted, so each must exist independently.
   if [[ ! -d "${HOME}/.config/k9s" ]]; then
-    echo "You did not have a .k9s folder in your home directory, creating."
+    echo "You did not have a .config/k9s folder in your home directory, creating."
     echo "K9s will use a local config."
     echo ""
     mkdir -p "${HOME}/.config/k9s"
+    directories_created=true
+  fi
+
+  if [[ ! -d "${HOME}/.local/share/k9s" ]]; then
+    echo "You did not have a .local/share/k9s folder in your home directory, creating."
+    echo ""
     mkdir -p "${HOME}/.local/share/k9s"
     directories_created=true
   fi
