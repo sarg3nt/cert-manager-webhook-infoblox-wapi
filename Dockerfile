@@ -7,7 +7,7 @@
 # running the Go toolchain at full native speed. This avoids emulating the whole
 # Go build under QEMU for non-amd64 platforms (e.g. linux/arm64), which is
 # extremely slow for a dependency tree this size.
-FROM --platform=$BUILDPLATFORM golang:1.26.4@sha256:792443b89f65105abba56b9bd5e97f680a80074ac62fc844a584212f8c8102c3 AS build_deps
+FROM --platform=$BUILDPLATFORM golang:1.26.4@sha256:f96cc555eb8db430159a3aa6797cd5bae561945b7b0fe7d0e284c63a3b291609 AS build_deps
 
 LABEL org.opencontainers.image.source=https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
 
