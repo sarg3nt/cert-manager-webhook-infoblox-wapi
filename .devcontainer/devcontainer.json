@@ -68,7 +68,8 @@
         "tamasfe.even-better-toml", // TOML
         "tim-koehler.helm-intellisense", // Helm
         "timonwong.shellcheck", //bash script linting
-        "yzhang.markdown-all-in-one" // markdown preview and support
+        "yzhang.markdown-all-in-one", // markdown preview and support
+        "Anthropic.claude-code"
       ],
       "settings": {
         "dev.containers.dockerCredentialHelper": false,
