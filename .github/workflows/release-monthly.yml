@@ -31,6 +31,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: write
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -46,7 +47,7 @@ jobs:
 
       - name: Get the Latest Version
         id: get_version
-        run: bash ${GITHUB_WORKSPACE}/workflow_scripts/get_latest_version.sh
+        run: bash "${GITHUB_WORKSPACE}/workflow_scripts/get_latest_version.sh"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY: ${{ env.REGISTRY }}
@@ -73,7 +74,7 @@ jobs:
 
       - name: Compare the Old and New Docker Images
         id: compare_versions
-        run: bash ${GITHUB_WORKSPACE}/workflow_scripts/compare_containers.sh
+        run: bash "${GITHUB_WORKSPACE}/workflow_scripts/compare_containers.sh"
         env:
           GH_TOKEN: ${{ github.token }}
           TAG_OLD: ${{ env.TAG_OLD }}
@@ -100,9 +101,23 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ env.VERSION }}
 
-  # NOTE: The Helm chart version/appVersion are owned solely by Release Please
-  # (see release-please.yml + .release-please-config.json, which uses the generic
-  # annotation updater on Chart.yaml). A previous design ran the
+      # Release Please computes the next version from .release-please-manifest.json,
+      # which this workflow does not otherwise touch. Without this PR the manifest
+      # stays on the last Release Please version and the next release PR proposes a
+      # version this workflow already published. Uses the PAT so the PR triggers CI
+      # (the required CodeQL check), same as release-please.yml.
+      - name: Open PR to Sync Release Please Version
+        if: steps.compare_versions.outputs.continue == 'true'
+        run: bash "${GITHUB_WORKSPACE}/workflow_scripts/sync_release_please_version.sh"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          VERSION: ${{ env.VERSION }}
+
+  # NOTE: The Helm chart version/appVersion are bumped by Release Please (see
+  # release-please.yml + .release-please-config.json, which uses the generic
+  # annotation updater on Chart.yaml). The only other writer is the sync PR above,
+  # which copies this workflow's already-computed version into the manifest and
+  # chart rather than doing its own SemVer calculation. A previous design ran the
   # lrstanley/helm-version-updater action here to open an independent chart-bump
   # PR, but it performed its own SemVer calculation and drifted the chart to
   # 2.0.0 while the app stayed on 1.x -- the chart then referenced a non-existent
