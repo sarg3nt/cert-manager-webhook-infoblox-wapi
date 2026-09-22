@@ -75,10 +75,12 @@ open_vs_code() {
   fi
 
   # open devcontainer
-  # shellcheck disable=SC2001
-  # shellcheck disable=SC2046
-  # shellcheck disable=SC2005
-  HOST_PATH=$(echo $(wslpath -w "$PWD") | sed -e 's,\\,\\\\,g')
+  # wslpath only exists under WSL; on macOS/Linux the host path is $PWD as-is.
+  if command -v wslpath &>/dev/null; then
+    HOST_PATH=$(wslpath -w "$PWD" | sed -e 's,\\,\\\\,g')
+  else
+    HOST_PATH="$PWD"
+  fi
   WORKSPACE="/workspaces/$(basename "$PWD")"
 
   URI_SUFFIX=
