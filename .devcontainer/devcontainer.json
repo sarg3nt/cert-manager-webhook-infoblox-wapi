@@ -7,6 +7,9 @@
   "mounts": [
     "source=cert-manager-webhook-infoblox-wapi-bashhistory,target=/commandhistory,type=volume",
     "source=cert-manager-webhook-infoblox-wapi-plugins,target=/home/vscode/.vscode-server/extensions,type=volume",
+    // Claude Code state (login, settings, plugins, session history), per project so its login token is not shared with
+    // other dev containers. Survives rebuilds. See CLAUDE_CONFIG_DIR below.
+    "source=cert-manager-webhook-infoblox-wapi-claude,target=/home/vscode/.claude,type=volume",
     ///// The following should be the same for all dev containers using this image. The post_start_command.sh relies on these.
     // Your host should have a .docker directory set up and you should be logged into any Artifactory
     // repositories you need access to in the dev container.  Logging into a repo inside the dev container will not stick.
@@ -17,11 +20,9 @@
     "source=${localEnv:HOME}/.config/k9s,target=/home/vscode/.config/k9s-localhost,type=bind",
     "source=${localEnv:HOME}/.local/share/k9s,target=/home/vscode/.local/share/k9s-localhost,type=bind",
     "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind",
-    // Claude Code state (login, settings, plugins, session history). A named volume shared by every dev container
-    // using this image, so one login survives rebuilds and carries across projects. See CLAUDE_CONFIG_DIR below.
-    "source=claude-code-config,target=/home/vscode/.claude,type=volume",
-    // Host ~/.claude, read-only. post_start_command.sh copies only CLAUDE.md (user-global instructions) from it.
-    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude-localhost,type=bind,readonly"
+    // Only the host's user-global CLAUDE.md, read-only; post_start_command.sh copies it in. The rest of host ~/.claude
+    // (session transcripts, history) is deliberately not exposed to the container.
+    "source=${localEnv:HOME}/.claude/CLAUDE.md,target=/home/vscode/.claude-localhost/CLAUDE.md,type=bind,readonly"
   ],
   "containerEnv": {
     ////////// Repo Specific Environment Variables //////////

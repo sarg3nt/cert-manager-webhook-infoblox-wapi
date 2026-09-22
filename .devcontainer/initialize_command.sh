@@ -75,11 +75,13 @@ create_required_folders() {
     directories_created=true
   fi
 
-  if [[ ! -d "${HOME}/.claude" ]]; then
-    echo "You did not have a .claude folder in your home directory, creating."
-    echo "Claude Code in the dev container will run without your user-global CLAUDE.md."
+  # CLAUDE.md is bind-mounted as a single file, so it must exist (an empty one is fine).
+  if [[ ! -f "${HOME}/.claude/CLAUDE.md" ]]; then
+    echo "You did not have a ~/.claude/CLAUDE.md file, creating an empty one."
+    echo "Claude Code in the dev container will run without user-global instructions."
     echo ""
     mkdir -p "${HOME}/.claude"
+    touch "${HOME}/.claude/CLAUDE.md"
     directories_created=true
   fi
 

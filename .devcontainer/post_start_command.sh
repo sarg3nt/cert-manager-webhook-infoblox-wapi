@@ -177,7 +177,7 @@ setup_claude_code() {
   mkdir -p "${config}" >/dev/null 2>&1 || true
   sudo chown "$(id -u):$(id -g)" "${config}"
 
-  if [[ -f "${remote_config}/CLAUDE.md" ]]; then
+  if [[ -s "${remote_config}/CLAUDE.md" ]]; then
     echo "  - Host CLAUDE.md detected, copying in."
     cp "${remote_config}/CLAUDE.md" "${config}/CLAUDE.md"
   else
