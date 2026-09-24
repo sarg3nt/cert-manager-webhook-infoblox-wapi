@@ -1,5 +1,12 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [3.0.6](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.5...v3.0.6) (2026-09-24)
+
+
+### 🐛 Bug Fixes
+
+* **chart:** set APIService port from service.port ([1291ea5](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/1291ea532e8a34fb4d401ecdf2cc5b61373d9ca6))
+
 ## [3.0.5](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.4...v3.0.5) (2026-09-22)
 
 
