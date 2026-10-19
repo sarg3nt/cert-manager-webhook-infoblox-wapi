@@ -429,6 +429,8 @@ TEST_ZONE_NAME=example.com. make test
    `$(IMAGE_NAME):$(IMAGE_TAG)-$(GIT_BRANCH)` as given in the `Makefile`
 1. Run `make push-container`. This will push the above tagged image to the repo defined in the `IMAGE_NAME`
 
+Pull requests also get a published test image automatically; see [Testing PR Images on a Cluster](docs/testing-pr-images.md).
+
 ## Contributions
 
 We welcome contributions to this project! Please follow these guidelines:

@@ -224,6 +224,7 @@ For DNS challenge tests, use the `acmetest.NewFixture` helper (see `main_test.go
 
 ## Related Documentation
 
+- [Testing PR Images on a Cluster](testing-pr-images.md)
 - [cert-manager Webhook Testing](https://cert-manager.io/docs/contributing/dns-providers/)
 - [Kubebuilder Envtest](https://book.kubebuilder.io/reference/envtest.html)
 - [cert-manager Webhook Example](https://github.com/cert-manager/webhook-example)
