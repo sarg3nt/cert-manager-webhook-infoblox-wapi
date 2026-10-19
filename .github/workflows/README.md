@@ -30,7 +30,7 @@ This directory contains all GitHub Actions workflows for the cert-manager-webhoo
 **Triggers:** PR opened/synchronized/reopened/closed against main, manual (with PR number)  
 **Jobs:**
 - **Build and Push PR Image:** Builds `linux/amd64` + `linux/arm64` from the PR head, pushes `ghcr.io/<repo>-pr:pr-<N>` and `:pr-<N>-<sha7>`, and keeps one PR comment updated with the image refs. Skipped for fork and Dependabot PRs (read-only token)
-- **Delete PR Images:** On merge or close, deletes the PR's tags and their platform manifests
+- **Delete PR Images:** On merge or close, deletes the PR's tags and their platform manifests (one retry), then sweeps untagged manifests older than a day
 
 **Secrets Required:** None (uses `GITHUB_TOKEN`). See [docs/testing-pr-images.md](../../docs/testing-pr-images.md)
 

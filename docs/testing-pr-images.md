@@ -53,7 +53,7 @@ If you deploy the moving `pr-<N>` tag instead of the immutable one, also pass `-
 
 ## Cleanup
 
-When the PR is merged or closed, the workflow's cleanup job deletes the `pr-<N>` and `pr-<N>-*` tags along with their per-platform manifests. Switch any cluster still running a PR image back to a release image before (or soon after) merging, or its pods will fail to pull on the next reschedule.
+When the PR is merged or closed, the workflow's cleanup job deletes the `pr-<N>` and `pr-<N>-*` tags along with their per-platform manifests, retrying once if GHCR rejects a delete. It then sweeps any untagged manifests in the package older than one day, such as one left behind by a failed delete. The age floor keeps the sweep away from another PR's build that is still pushing; a failed sweep only raises a warning. Switch any cluster still running a PR image back to a release image before (or soon after) merging, or its pods will fail to pull on the next reschedule.
 
 ## Pull Requests That Don't Get Images
 

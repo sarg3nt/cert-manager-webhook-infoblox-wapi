@@ -80,15 +80,20 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Values go through env rather than ${{ }} interpolation so a ref name
+      # can't be executed as shell.
       - name: Output Image Details
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          TAGS: ${{ steps.meta.outputs.tags }}
         run: |
-          echo "Docker image pushed with digest: ${{ steps.build.outputs.digest }}"
+          echo "Docker image pushed with digest: ${DIGEST}"
           echo "Image tags:"
-          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n'
+          echo "${TAGS}" | tr ',' '\n'
           echo ""
           echo "To use with digest:"
-          VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          echo "  ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${VERSION}@${{ steps.build.outputs.digest }}"
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "  ${REGISTRY}/${REPOSITORY}:${VERSION}@${DIGEST}"
 
   # NOTE: The Helm chart `version` and `appVersion` are bumped by Release Please
   # (see .release-please-config.json `extra-files`), keeping the chart, the app,

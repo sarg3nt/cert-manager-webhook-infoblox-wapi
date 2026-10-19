@@ -205,12 +205,14 @@ jobs:
               --jq '.[].metadata.container.tags[]' 2>err.txt); then
             if grep -q "HTTP 404" err.txt; then
               echo "Package ${PACKAGE} not found; nothing to clean up."
+              echo "package=false" >> "$GITHUB_OUTPUT"
               echo "found=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             cat err.txt
             exit 1
           fi
+          echo "package=true" >> "$GITHUB_OUTPUT"
           if grep -qxE "pr-${PR_NUMBER}(-[0-9a-f]{7})?" <<<"$tags"; then
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
@@ -219,13 +221,48 @@ jobs:
           fi
 
       # Deleting a multi-arch tag also removes its per-platform and attestation
-      # manifests. Untagged sweeping is deliberately off: another PR's build may
-      # be mid-push, with its platform manifests not yet referenced by a tag.
+      # manifests. The action deletes those concurrently, and GHCR has rejected
+      # a child delete mid-run with a spurious 400, so retry once after a pause.
       - name: Delete PR Image Tags
+        id: delete
         if: steps.check.outputs.found == 'true'
+        continue-on-error: true
         uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
         with:
           token: ${{ github.token }}
           package: ${{ github.event.repository.name }}-pr
           delete-tags: pr-${{ env.PR_NUMBER }},pr-${{ env.PR_NUMBER }}-*
           delete-untagged: false
+
+      - name: Wait Before Retry
+        if: steps.delete.outcome == 'failure'
+        run: sleep 30
+
+      - name: Retry Delete PR Image Tags
+        if: steps.delete.outcome == 'failure'
+        uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
+        with:
+          token: ${{ github.token }}
+          package: ${{ github.event.repository.name }}-pr
+          delete-tags: pr-${{ env.PR_NUMBER }},pr-${{ env.PR_NUMBER }}-*
+          delete-untagged: false
+
+      # Sweep untagged leftovers, such as a child manifest a failed delete left
+      # behind or a cancelled build's partial push. The one-day age floor keeps
+      # this away from any build still pushing, whose platform manifests are
+      # briefly untagged until its index lands. Failures here only warn: the
+      # PR's own tags are already gone, and a stray untagged manifest is harmless.
+      - name: Sweep Stale Untagged Images
+        id: sweep
+        if: steps.check.outputs.package == 'true'
+        continue-on-error: true
+        uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
+        with:
+          token: ${{ github.token }}
+          package: ${{ github.event.repository.name }}-pr
+          delete-untagged: true
+          older-than: 1 day
+
+      - name: Report Sweep Failure
+        if: steps.sweep.outcome == 'failure'
+        run: echo "::warning::Sweeping stale untagged images failed; see the Sweep Stale Untagged Images step log. PR tags were deleted."
