@@ -69,8 +69,8 @@ The run checks that the PR is open and that its head branch matches the selected
 
 ## One-Time Package Setup
 
-The `-pr` package is created on the first PR build. After that first push:
+The `-pr` package is created by the first PR build. Because the workflow publishes it with the repository's `GITHUB_TOKEN`, it is linked to this public repository and inherits its public visibility, so clusters can pull without an `imagePullSecret`. To confirm, or if the package is ever recreated:
 
 1. Open the package at **github.com/sarg3nt?tab=packages → cert-manager-webhook-infoblox-wapi-pr → Package settings**.
-2. Under **Danger Zone → Change visibility**, set it to **Public** so clusters can pull without an `imagePullSecret`. GitHub has no API for changing container package visibility, so this step is manual.
-3. Under **Manage Actions access**, confirm `cert-manager-webhook-infoblox-wapi` is listed with the **Admin** role. The cleanup job needs Admin to delete package versions. GitHub normally grants this to the repository that first published the package.
+2. Check that visibility is **Public**. If it isn't, change it under **Danger Zone → Change visibility**; GitHub has no API for this.
+3. Under **Manage Actions access**, confirm `cert-manager-webhook-infoblox-wapi` has the **Admin** role. The cleanup job needs Admin to delete package versions.
