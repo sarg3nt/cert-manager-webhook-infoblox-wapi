@@ -1,5 +1,25 @@
 # Cert Manager Webhook Infoblox Wapi Release Notes
 
+## [3.0.8](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.7...v3.0.8) (2026-10-19)
+
+
+### 📚 Documentation
+
+* note PR image package inherits public visibility ([f7d9345](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/f7d9345b63cd94f844f38af60e5114dfe4fad3da))
+
+
+### 🧹 Maintenance
+
+* **deps:** align Go toolchain to 1.27.0 ([5248af9](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/5248af9cf9299d6ffa6a3bb61975ab786741a459))
+* **deps:** roll up maintenance PRs [#266](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/issues/266)-[#269](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/issues/269) ([712bd70](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/712bd70aed44e1ecb94fde2f4549333b7bd05e90))
+* **release:** sync Release Please manifest and chart to 3.0.7 ([ea7f435](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/ea7f435dd62e07497e968cc016004c2ef5e38be2))
+
+
+### 👷 CI/CD
+
+* publish per-PR test images and delete them on merge ([fc22d78](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/fc22d78cfa50506aa608713fae72e6377b596a05))
+* publish per-PR test images and delete them on merge ([f45b5d1](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/commit/f45b5d1a37fd46e539be54b4df5ae6500dfb5f41))
+
 ## [3.0.6](https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/compare/v3.0.5...v3.0.6) (2026-09-24)
 
 
