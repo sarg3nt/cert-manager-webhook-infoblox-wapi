@@ -54,12 +54,18 @@ jobs:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
+      # Outputs are strings: `releases_created` is "false" (truthy) when nothing
+      # was released, so compare explicitly. Values are passed through env, never
+      # interpolated into the script, because the release notes are built from
+      # commit messages and would otherwise be executed as shell.
       - name: Log Release Info
-        if: ${{ steps.release.outputs.releases_created }}
+        if: steps.release.outputs.releases_created == 'true'
+        env:
+          TAG_NAME: ${{ steps.release.outputs['.--tag_name'] }}
+          VERSION: ${{ steps.release.outputs['.--version'] }}
         run: |
-          echo "Release created: ${{ steps.release.outputs['.--tag_name'] }}"
-          echo "Version: ${{ steps.release.outputs['.--version'] }}"
-          echo "Release PR: ${{ steps.release.outputs.pr }}"
+          echo "Release created: ${TAG_NAME}"
+          echo "Version: ${VERSION}"
 
   # Note: Your existing release.yml workflow will automatically trigger
   # when the release tag is created by release-please, so no additional
