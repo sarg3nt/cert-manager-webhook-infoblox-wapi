@@ -31,7 +31,7 @@ jobs:
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+      uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
       with:
         disable-sudo: true
         egress-policy: audit
@@ -56,7 +56,7 @@ jobs:
     # re-runs safe: if a chart's release/tag already exists it is skipped instead
     # of failing the job.
     - name: Run Chart-Releaser
-      uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
+      uses: helm/chart-releaser-action@df287104677278f869ca5480bd260358397cc3f9 # v1.8.0
       with: 
         mark_as_latest: false
         skip_existing: true
