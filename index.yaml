@@ -2,6 +2,29 @@ apiVersion: v1
 entries:
   cert-manager-webhook-infoblox-wapi:
   - apiVersion: v2
+    appVersion: 3.0.9
+    created: "2026-11-12T22:22:54.002155643Z"
+    description: Cert-manager webhook for interacting with InfoBlox WAPI servers
+    digest: c8f324e4b294aa5d73b24d7e0afae649216cfbf9b3aa45843a110ae7fafa2c1a
+    home: https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
+    keywords:
+    - cert-manager
+    - webhook
+    - letsencrypt
+    - acme
+    - dns01
+    - infoblox
+    maintainers:
+    - email: dave@sarg3.net
+      name: Dave Sargent
+    name: cert-manager-webhook-infoblox-wapi
+    sources:
+    - https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi
+    type: application
+    urls:
+    - https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/releases/download/cert-manager-webhook-infoblox-wapi-3.0.9/cert-manager-webhook-infoblox-wapi-3.0.9.tgz
+    version: 3.0.9
+  - apiVersion: v2
     appVersion: 3.0.8
     created: "2026-11-12T21:55:07.904724489Z"
     description: Cert-manager webhook for interacting with InfoBlox WAPI servers
@@ -450,4 +473,4 @@ entries:
     urls:
     - https://github.com/sarg3nt/cert-manager-webhook-infoblox-wapi/releases/download/cert-manager-webhook-infoblox-wapi-1.6.0/cert-manager-webhook-infoblox-wapi-1.6.0.tgz
     version: 1.6.0
-generated: "2026-11-12T21:55:07.904836295Z"
+generated: "2026-11-12T22:22:54.002614384Z"
